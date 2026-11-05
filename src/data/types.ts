@@ -8,6 +8,9 @@ export type Visuel = {
   src?: string
   legende: string
   teinte: 'rouge' | 'encre' | 'papier'
+  /** Dimensions de la photo en pixels, pour réserver la bonne place sans la recadrer. */
+  largeur?: number
+  hauteur?: number
 }
 
 export type Publication = {

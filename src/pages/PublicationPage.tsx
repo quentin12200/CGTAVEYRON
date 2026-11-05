@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { usePublications } from '../data/publications'
-import { Galerie } from '../components/Galerie'
+import { PhotosEnPile } from '../components/Galerie'
 import { PastilleTheme } from '../components/PastilleTheme'
 import { Partager, Reaction } from '../components/Actions'
 import { formatJourMois, lireDate } from '../lib/format'
@@ -41,8 +41,8 @@ export function PublicationPage() {
       </div>
 
       {pub.visuels?.length ? (
-        <div className="mt-8 overflow-hidden sm:rounded-2xl">
-          <Galerie visuels={pub.visuels} id={`page-${pub.id}`} />
+        <div className="mt-8">
+          <PhotosEnPile visuels={pub.visuels} />
         </div>
       ) : null}
 
