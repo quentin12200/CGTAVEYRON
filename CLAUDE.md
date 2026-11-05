@@ -23,6 +23,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
 - `src/data/demo.ts` — contenu du site en attendant Firestore (étape 2) : agenda, unions locales, et publications reprises de `facebook.ts`. Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
 - `src/data/facebook.ts` — vraies publications de la page Facebook de l'UD, générées depuis l'export CSV de Meta Business Suite (8 octobre → 5 novembre 2026). Heures de l'export en heure de Californie, converties en heure de Paris. Rappels répétés dédoublonnés, publications sans texte écartées. Les photos restent sur Facebook (lien « Voir sur Facebook »).
+- `public/photos/` — photos des publications (redimensionnées, métadonnées et position GPS retirées), reliées via `visuels` dans `facebook.ts`.
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (glissable + plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
 - `src/pages/` — Accueil, PublicationPage, Agenda (« À venir » + « Ils ont eu lieu », lien Facebook par rendez-vous), Adherer, Contact, MentionsLegales, Introuvable.
