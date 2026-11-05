@@ -1,7 +1,6 @@
 import { evenements } from '../data/demo'
 import { Page } from '../components/Page'
 import { formatJourSemaine, formatMois, numeroJour } from '../lib/format'
-import { DEMO } from '../data/demo'
 
 export function Agenda() {
   const parMois = new Map<string, typeof evenements>()
@@ -15,7 +14,6 @@ export function Agenda() {
       titre="Agenda"
       intro="Manifestations, assemblées, formations et permanences dans le département."
     >
-      {DEMO && <p className="-mt-4 mb-8 text-sm text-muted">Dates de démonstration.</p>}
       <div className="flex flex-col gap-12">
         {[...parMois].map(([mois, liste]) => (
           <section key={mois} aria-label={mois}>

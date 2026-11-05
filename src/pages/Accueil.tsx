@@ -28,6 +28,11 @@ export function Accueil() {
     [filtre, epinglee],
   )
   const visibles = fil.slice(0, nombre)
+  const aujourdhui = new Date().toLocaleDateString('sv-SE')
+  const prochains = evenements
+    .filter((e) => e.date >= aujourdhui)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 3)
 
   // Chargement progressif au défilement (prêt pour Firestore à l'étape 2).
   useEffect(() => {
@@ -117,8 +122,13 @@ export function Accueil() {
                 <h2 id="titre-agenda" className="font-condensed text-3xl font-[850]">Prochains rendez-vous</h2>
                 <Link to="/agenda" className="font-semibold text-rouge hover:underline">Agenda</Link>
               </div>
-              <ol className="mt-4 divide-y divide-[var(--rule)] border-y border-rule">
-                {evenements.slice(0, 3).map((e) => (
+              {prochains.length === 0 && (
+                <p className="mt-4 border-y border-rule py-4 text-muted">
+                  Pas de rendez-vous annoncé pour l’instant. Les prochaines dates seront publiées ici.
+                </p>
+              )}
+              <ol className="mt-4 divide-y divide-[var(--rule)] border-y border-rule empty:hidden">
+                {prochains.map((e) => (
                   <li key={e.id} className="flex gap-4 py-4">
                     <div className="w-12 shrink-0 text-center">
                       <div className="font-condensed text-4xl leading-none font-[850] text-rouge">{numeroJour(e.date)}</div>
