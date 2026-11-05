@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { MotionConfig } from 'motion/react'
 import { Header } from './components/Header'
@@ -10,6 +10,9 @@ import { Adherer } from './pages/Adherer'
 import { Contact } from './pages/Contact'
 import { MentionsLegales } from './pages/MentionsLegales'
 import { Introuvable } from './pages/Introuvable'
+
+// Chargée à part : les visiteurs ne téléchargent pas le code de l'administration.
+const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })))
 
 function RemonterEnHaut() {
   const { pathname } = useLocation()
@@ -40,6 +43,14 @@ export default function App() {
           <Route path="/adherer" element={<Adherer />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
+          <Route
+            path="/admin"
+            element={
+              <Suspense fallback={<main id="contenu" className="mx-auto max-w-3xl px-4 pt-12 text-muted">Chargement…</main>}>
+                <Admin />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<Introuvable />} />
         </Routes>
         <Footer />

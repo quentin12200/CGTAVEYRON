@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { publications } from '../data/demo'
+import { usePublications } from '../data/publications'
 import { Galerie } from '../components/Galerie'
 import { PastilleTheme } from '../components/PastilleTheme'
 import { Partager, Reaction } from '../components/Actions'
@@ -10,6 +10,7 @@ import { Introuvable } from './Introuvable'
 
 export function PublicationPage() {
   const { id } = useParams()
+  const publications = usePublications()
   const pub = publications.find((p) => p.id === id)
 
   useEffect(() => {
