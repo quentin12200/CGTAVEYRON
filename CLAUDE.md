@@ -1,0 +1,50 @@
+# Site de l'UD CGT Aveyron
+
+Site public de l'Union départementale CGT de l'Aveyron. Page d'accueil = fil de publications façon Facebook ; on publie d'abord ici, puis on partage le lien sur Facebook.
+
+Cahier des charges complet (objectifs, feuille de route, prompts par étape) : document « Site internet CGT Aveyron — cahier des charges » de Quentin.
+
+## Pile technique
+
+- React 19 + Vite + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite`), animations avec `motion` (`motion/react`), routes avec `react-router-dom`.
+- Hébergement : Firebase Hosting, projet `cgtaveyron` (`.firebaserc`). Firestore, Storage, Authentication et Functions arrivent aux étapes suivantes.
+- Code sur GitHub (`quentin12200/CGTAVEYRON`), branche de production **`principal`**.
+- Déploiement : `.github/workflows/deploy.yml` (push sur `principal` → production) et `preview.yml` (pull request → version de test 7 jours). Secret requis : `FIREBASE_SERVICE_ACCOUNT_CGTAVEYRON`.
+
+## Commandes
+
+- `npm run dev` — serveur local
+- `npm run build` — vérification TypeScript + build dans `dist/`
+- `npx firebase deploy --only hosting` — déploiement manuel (après `npx firebase login`)
+
+## Organisation
+
+- `src/config.ts` — réglages à compléter (lien d'adhésion, Facebook, e-mail de l'UD).
+- `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
+- `src/data/demo.ts` — **contenu de démonstration**, à remplacer par Firestore à l'étape 2. Ne jamais y mettre d'adresses ou de chiffres inventés présentés comme réels.
+- `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (glissable + plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
+- `src/pages/` — Accueil, PublicationPage, Agenda, Adherer, Contact, MentionsLegales, Introuvable.
+
+## Design
+
+- Couleurs (dans `src/index.css`, `@theme`) : rouge `#E1001A`, rouge foncé `#B50015`, encre `#1F1A24`, papier `#F7F7F5`, ciment `#6F6B73`, ligne `#E4E2E6` ; mode sombre automatique via des variables CSS (`--bg`, `--surface`, `--text`, `--muted`, `--rule`).
+- Typo : Archivo étroit très gras (`font-condensed`) pour les titres, façon banderole ; Atkinson Hyperlegible Next pour le texte (lisibilité pour tous les publics).
+- Mouvement : un seul grand mouvement automatique (la banderole qui se déploie au chargement). Le reste répond aux gestes (menu, galerie, réaction, filtres). `MotionConfig reducedMotion="user"` + règle CSS respectent le réglage « réduire les animations ».
+- Mobile d'abord : les visiteurs arrivent surtout depuis Facebook sur téléphone.
+- Textes de l'interface en français, voix active, phrases courtes, pas de majuscules partout.
+
+## Conventions
+
+- Noms de composants et de variables en français, cohérents avec l'existant.
+- Pas de cookies publicitaires ni de traceurs.
+- Les comptes (Google/Firebase, GitHub, domaine) doivent à terme appartenir à l'UD.
+- Mettre à jour ce fichier à la fin de chaque étape.
+
+## Avancement
+
+- [x] Étape 1 — socle, design, routes, déploiement (contenu de démo)
+- [ ] Étape 2 — fil sur Firestore
+- [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
+- [ ] Étape 4 — mode administrateur `/admin`
+- [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA
+- [ ] Étape 6 — import des posts Facebook du dernier mois

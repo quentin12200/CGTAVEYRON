@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
+
+/* Jetons de design — voir CLAUDE.md */
+@theme {
+  --color-rouge: #e1001a;
+  --color-rouge-fonce: #b50015;
+  --color-encre: #1f1a24;
+  --color-papier: #f7f7f5;
+  --color-ciment: #6f6b73;
+  --color-ligne: #e4e2e6;
+  --color-nuit: #17131a;
+  --color-nuit-2: #221d26;
+
+  --font-display: 'Archivo Variable', 'Arial Narrow', sans-serif;
+  --font-sans: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    --bg: var(--color-papier);
+    --surface: #ffffff;
+    --text: var(--color-encre);
+    --muted: var(--color-ciment);
+    --rule: var(--color-ligne);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: var(--color-nuit);
+      --surface: var(--color-nuit-2);
+      --text: #f2eff4;
+      --muted: #a9a3ad;
+      --rule: #342d39;
+      color-scheme: dark;
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-rouge);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-rouge);
+    color: #fff;
+  }
+}
+
+@utility font-condensed {
+  font-family: var(--font-display);
+  font-stretch: 68%;
+  font-variation-settings: 'wdth' 68;
+}
+
+@utility text-muted {
+  color: var(--muted);
+}
+
+@utility bg-surface {
+  background: var(--surface);
+}
+
+@utility border-rule {
+  border-color: var(--rule);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
