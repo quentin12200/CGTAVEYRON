@@ -1,21 +1,22 @@
 // CONTENU DE DÉMONSTRATION — à remplacer par Firestore (étape 2 de la feuille de route).
-// Les textes, dates et lieux ci-dessous sont des exemples, pas des informations réelles.
+// Sauf la publication épinglée et l'agenda (réels, sourcés), les publications ci-dessous sont des exemples.
 import type { Evenement, Publication, UnionLocale } from './types'
 
 export const DEMO = true
 
 export const publications: Publication[] = [
   {
-    id: 'exemple-mobilisation',
-    titre: 'Journée de mobilisation interprofessionnelle',
-    date: '2026-11-04',
-    dateEvenement: '2026-11-26T10:30:00',
-    lieu: 'Rodez, place d’Armes (exemple)',
+    // Appel réel, repris de l'agenda militant Demosphere Aveyron (aveyron.demosphere.net/rv/1953).
+    id: 'mobilisation-5-novembre',
+    titre: 'Faisons converger toutes les colères !',
+    date: '2026-11-05',
+    dateEvenement: '2026-11-05T14:30:00',
+    lieu: 'Rodez, jardin public',
     texte:
-      'Exemple de publication épinglée. Ici, l’appel à la mobilisation : les revendications, le lieu du rassemblement, l’heure de départ des cars depuis chaque union locale. Le compte à rebours se règle tout seul sur la date de l’événement.',
+      'Jeudi 5 novembre, à l’appel des organisations syndicales, grande journée nationale de grève et de manifestations partout en France. Salaires, services publics, coût de la vie : faisons converger toutes les colères !\n\nEn Aveyron, rendez-vous à 14 h 30 au jardin public de Rodez. Un bus CGT part de Villefranche-de-Rouergue, Decazeville et Millau.',
     theme: 'Mobilisation',
     epingle: true,
-    visuels: [{ legende: 'Tous dans la rue', teinte: 'rouge' }],
+    visuels: [{ legende: 'Toutes et tous dans la rue', teinte: 'rouge' }],
     source: 'site',
   },
   {
@@ -31,7 +32,7 @@ export const publications: Publication[] = [
   },
   {
     id: 'exemple-court',
-    titre: 'Merci aux 120 participants de l’assemblée générale',
+    titre: 'Merci à toutes celles et ceux venus à l’assemblée générale',
     date: '2026-10-30',
     texte:
       'Exemple de publication courte, sans photo : elle s’affiche en grand, comme une citation, pour rester lisible dans le fil.',
@@ -40,7 +41,7 @@ export const publications: Publication[] = [
   },
   {
     id: 'exemple-formation',
-    titre: 'Nouveaux élus CSE : la formation reprend en janvier',
+    titre: 'Nouveaux élus CSE : la formation vous attend',
     date: '2026-10-28',
     texte:
       'Exemple de publication avec plusieurs photos : faites glisser la galerie du doigt, ou touchez une image pour l’ouvrir en plein écran. Inscriptions auprès de votre union locale.',
@@ -64,7 +65,7 @@ export const publications: Publication[] = [
   },
   {
     id: 'exemple-rassemblement',
-    titre: 'Retour en images sur le rassemblement de samedi',
+    titre: 'Retour en images sur le rassemblement',
     date: '2026-10-18',
     texte: 'Exemple de publication importée depuis Facebook au lancement du site.',
     theme: 'Mobilisation',
@@ -76,11 +77,9 @@ export const publications: Publication[] = [
   },
 ]
 
+// Rendez-vous réels uniquement : pas de date inventée.
 export const evenements: Evenement[] = [
-  { id: 'e1', titre: 'Journée de mobilisation interprofessionnelle', date: '2026-11-26', heure: '10 h 30', lieu: 'Rodez (exemple)', type: 'Manifestation' },
-  { id: 'e2', titre: 'Commission exécutive de l’UD', date: '2026-12-03', heure: '8 h', lieu: 'Siège de l’UD (exemple)', type: 'Assemblée' },
-  { id: 'e3', titre: 'Permanence juridique', date: '2026-12-08', heure: '14 h', lieu: 'UL Villefranche-de-Rouergue (exemple)', type: 'Permanence' },
-  { id: 'e4', titre: 'Formation « Je découvre la CGT »', date: '2027-01-14', heure: '9 h', lieu: 'À préciser', type: 'Formation' },
+  { id: 'mobilisation-5-novembre', titre: 'Journée nationale de grève et de manifestations', date: '2026-11-05', heure: '14 h 30', lieu: 'Rodez, jardin public', type: 'Manifestation' },
 ]
 
 // Coordonnées à compléter : rien n'est inventé ici.
