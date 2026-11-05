@@ -63,8 +63,21 @@ export function CartePublication({ pub }: { pub: Publication }) {
       <div className="flex items-center gap-1 px-3 py-3">
         <Reaction id={pub.id} />
         <Partager titre={pub.titre} chemin={lien} />
-        <LienPublication pub={pub} className="ml-auto rounded-full px-4 py-2 font-semibold text-rouge hover:bg-[var(--rule)]/60">
-          {pub.lienFacebook ? (pub.lienFacebookLibelle === 'Voir la vidéo sur Facebook' ? 'Voir la vidéo' : 'Voir sur Facebook') : 'Lire'}
+        <LienPublication
+          pub={pub}
+          className="ml-auto flex h-10 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 font-semibold text-rouge hover:bg-[var(--rule)]/60"
+        >
+          {pub.lienFacebook ? (
+            <>
+              {pub.lienFacebookLibelle === 'Voir la vidéo sur Facebook' ? 'Vidéo' : 'Facebook'}
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7M9 7h8v8" />
+              </svg>
+              <span className="sr-only">(ouvre Facebook)</span>
+            </>
+          ) : (
+            'Lire'
+          )}
         </LienPublication>
       </div>
     </motion.article>

@@ -36,7 +36,7 @@ export function Reaction({ id }: { id: string }) {
       type="button"
       onClick={basculer}
       aria-pressed={fait}
-      className={`relative flex h-10 items-center gap-2 rounded-full px-4 font-semibold transition-colors ${
+      className={`relative flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold transition-colors ${
         fait ? 'bg-rouge text-white' : 'bg-[var(--rule)]/60 hover:bg-[var(--rule)]'
       }`}
     >
@@ -94,12 +94,12 @@ export function Partager({ titre, chemin }: { titre: string; chemin: string }) {
     <button
       type="button"
       onClick={partager}
-      className="flex h-10 items-center gap-2 rounded-full px-4 font-semibold transition-colors hover:bg-[var(--rule)]/60"
+      className="flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold transition-colors hover:bg-[var(--rule)]/60"
     >
       <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6" />
       </svg>
-      <span aria-live="polite">{copie ? 'Lien copié' : 'Partager'}</span>
+      <span aria-live="polite" className={copie ? '' : 'max-[400px]:sr-only'}>{copie ? 'Lien copié' : 'Partager'}</span>
     </button>
   )
 }
