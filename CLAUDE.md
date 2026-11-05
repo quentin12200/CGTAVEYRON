@@ -21,7 +21,8 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 - `src/config.ts` — réglages à compléter (lien d'adhésion, Facebook, e-mail de l'UD).
 - `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
-- `src/data/demo.ts` — **contenu de démonstration**, à remplacer par Firestore à l'étape 2. Ne jamais y mettre d'adresses ou de chiffres inventés présentés comme réels.
+- `src/data/demo.ts` — contenu du site en attendant Firestore (étape 2) : agenda, unions locales, et publications reprises de `facebook.ts`. Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
+- `src/data/facebook.ts` — vraies publications de la page Facebook de l'UD, générées depuis l'export CSV de Meta Business Suite (8 octobre → 5 novembre 2026). Heures de l'export en heure de Californie, converties en heure de Paris. Rappels répétés dédoublonnés, publications sans texte écartées. Les photos restent sur Facebook (lien « Voir sur Facebook »).
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (glissable + plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
 - `src/pages/` — Accueil, PublicationPage, Agenda, Adherer, Contact, MentionsLegales, Introuvable.
@@ -48,4 +49,4 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
 - [ ] Étape 4 — mode administrateur `/admin`
 - [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA
-- [ ] Étape 6 — import des posts Facebook du dernier mois
+- [ ] Étape 6 — import des posts Facebook du dernier mois (textes importés dans `facebook.ts` ; reste : photos, puis passage dans Firestore)

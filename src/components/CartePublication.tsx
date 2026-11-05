@@ -30,7 +30,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
               <Link to={lien} className="hover:text-rouge">{pub.titre}</Link>
             </h2>
             {pub.unionLocale && <p className="mt-1 text-muted">{pub.unionLocale}</p>}
-            <p className="mt-3 line-clamp-3 max-w-[62ch]">{pub.texte}</p>
+            {pub.texte && <p className="mt-3 line-clamp-3 max-w-[62ch]">{pub.texte}</p>}
           </div>
           <Galerie visuels={pub.visuels!} id={pub.id} />
         </>
@@ -39,7 +39,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
           <h2 className="border-l-4 border-rouge pl-4 font-condensed text-[2.4rem] leading-[0.98] font-[850] text-balance">
             <Link to={lien} className="hover:text-rouge">{pub.titre}</Link>
           </h2>
-          <p className="mt-4 max-w-[62ch] text-muted">{pub.texte}</p>
+          {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch] text-muted">{pub.texte}</p>}
         </div>
       )}
 

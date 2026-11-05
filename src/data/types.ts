@@ -24,6 +24,9 @@ export type Publication = {
   dateEvenement?: string
   lieu?: string
   source: 'site' | 'import-facebook'
+  /** Lien vers la publication d'origine sur Facebook (photos, vidéo). */
+  lienFacebook?: string
+  lienFacebookLibelle?: string
 }
 
 export type Evenement = {

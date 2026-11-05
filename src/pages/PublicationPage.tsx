@@ -46,7 +46,17 @@ export function PublicationPage() {
       ) : null}
 
       <div className="px-4 sm:px-0">
-        <p className="mt-8 max-w-[62ch] text-lg leading-relaxed whitespace-pre-line">{pub.texte}</p>
+        {pub.texte && <p className="mt-8 max-w-[62ch] text-lg leading-relaxed whitespace-pre-line">{pub.texte}</p>}
+        {pub.lienFacebook && (
+          <a
+            href={pub.lienFacebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex h-12 items-center rounded-full border border-rule px-6 font-semibold text-rouge hover:bg-[var(--rule)]/60"
+          >
+            {pub.lienFacebookLibelle ?? 'Voir sur Facebook'}
+          </a>
+        )}
         <div className="mt-8 flex items-center gap-1 border-t border-rule pt-4">
           <Reaction id={pub.id} />
           <Partager titre={pub.titre} chemin={`/publication/${pub.id}`} />

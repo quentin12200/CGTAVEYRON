@@ -85,7 +85,7 @@ export function Banderole({ pub }: { pub: Publication }) {
               to={`/publication/${pub.id}`}
               className="mt-4 inline-flex h-12 items-center rounded-full bg-white px-6 font-semibold text-rouge transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
-              Lire l’appel
+              Lire la suite
             </Link>
           </div>
 
