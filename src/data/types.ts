@@ -32,10 +32,14 @@ export type Publication = {
 export type Evenement = {
   id: string
   titre: string
+  /** Date ISO AAAA-MM-JJ. */
   date: string
   heure?: string
   lieu: string
-  type: 'Manifestation' | 'Assemblée' | 'Formation' | 'Permanence'
+  type: 'Manifestation' | 'Rassemblement' | 'Congrès' | 'Assemblée' | 'Formation' | 'Permanence'
+  description?: string
+  /** Publication Facebook qui annonce ou raconte le rendez-vous. */
+  lienFacebook?: string
 }
 
 export type UnionLocale = {
