@@ -53,7 +53,7 @@ export function Banderole({ pub }: { pub: Publication }) {
           À la une
         </p>
 
-        <h1 className="mt-4 max-w-5xl font-condensed text-[clamp(2.4rem,10.5vw,8.5rem)] leading-[0.86] font-[900] text-balance hyphens-auto">
+        <h1 className="mt-4 max-w-5xl font-condensed text-[clamp(2.4rem,10.5vw,8.5rem)] leading-[0.86] font-[900] hyphens-auto sm:hyphens-none">
           {mots.map((m, i) => (
             <span key={i} className="mr-[0.2em] inline-block overflow-hidden pb-[0.06em] align-bottom last:mr-0">
               <motion.span

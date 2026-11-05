@@ -2,8 +2,8 @@ import type { Visuel as V } from '../data/types'
 
 const TEINTES: Record<V['teinte'], { fond: string; texte: string; trait: string }> = {
   rouge: { fond: 'var(--color-rouge)', texte: '#ffffff', trait: 'rgba(255,255,255,.18)' },
-  encre: { fond: 'var(--color-encre)', texte: '#ffffff', trait: 'rgba(225,0,26,.9)' },
-  papier: { fond: '#ecebe7', texte: 'var(--color-encre)', trait: 'rgba(225,0,26,.85)' },
+  encre: { fond: 'var(--color-encre)', texte: '#ffffff', trait: 'rgba(210,0,18,.9)' },
+  papier: { fond: '#ecebe7', texte: 'var(--color-encre)', trait: 'rgba(210,0,18,.85)' },
 }
 
 /** Affiche la photo, ou à défaut un visuel façon tract avec la légende en gros. */

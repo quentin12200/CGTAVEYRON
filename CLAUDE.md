@@ -22,12 +22,13 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - `src/config.ts` — réglages à compléter (lien d'adhésion, Facebook, e-mail de l'UD).
 - `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
 - `src/data/demo.ts` — **contenu de démonstration**, à remplacer par Firestore à l'étape 2. Ne jamais y mettre d'adresses ou de chiffres inventés présentés comme réels.
+- `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (glissable + plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
 - `src/pages/` — Accueil, PublicationPage, Agenda, Adherer, Contact, MentionsLegales, Introuvable.
 
 ## Design
 
-- Couleurs (dans `src/index.css`, `@theme`) : rouge `#E1001A`, rouge foncé `#B50015`, encre `#1F1A24`, papier `#F7F7F5`, ciment `#6F6B73`, ligne `#E4E2E6` ; mode sombre automatique via des variables CSS (`--bg`, `--surface`, `--text`, `--muted`, `--rule`).
+- Couleurs (dans `src/index.css`, `@theme`) : rouge `#D20012` (celui du logo), rouge foncé `#A8000E`, encre `#1F1A24`, papier `#F7F7F5`, ciment `#6F6B73`, ligne `#E4E2E6` ; mode sombre automatique via des variables CSS (`--bg`, `--surface`, `--text`, `--muted`, `--rule`).
 - Typo : Archivo étroit très gras (`font-condensed`) pour les titres, façon banderole ; Atkinson Hyperlegible Next pour le texte (lisibilité pour tous les publics).
 - Mouvement : un seul grand mouvement automatique (la banderole qui se déploie au chargement). Le reste répond aux gestes (menu, galerie, réaction, filtres). `MotionConfig reducedMotion="user"` + règle CSS respectent le réglage « réduire les animations ».
 - Mobile d'abord : les visiteurs arrivent surtout depuis Facebook sur téléphone.
