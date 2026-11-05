@@ -15,7 +15,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 - `npm run dev` — serveur local
 - `npm run build` — vérification TypeScript + build dans `dist/`
-- `npx firebase deploy --only hosting` — déploiement manuel (après `npx firebase login`)
+- Mise en ligne sans rien installer : GitHub → onglet Actions → « Mise en ligne » → Run workflow (ou fusionner une pull request dans `principal`).
 
 ## Organisation
 
