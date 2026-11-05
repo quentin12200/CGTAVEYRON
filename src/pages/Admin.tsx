@@ -23,6 +23,10 @@ function messageErreur(e: unknown): string {
   if (code.includes('popup-blocked')) return 'Le navigateur a bloqué la fenêtre de connexion. Autorisez les fenêtres pop-up et réessayez.'
   if (code.includes('unauthorized-domain'))
     return 'Cette adresse n’est pas autorisée pour la connexion. Utilisez https://cgtaveyron.web.app/admin.'
+  if (code.includes('storage/unauthorized'))
+    return 'Firebase refuse la photo : collez les règles storage.rules dans Storage → Règles, puis Publier.'
+  if (code.includes('storage/retry-limit-exceeded') || code.includes('storage/no-default-bucket') || code.includes('storage/bucket-not-found'))
+    return 'Storage ne répond pas. Vérifiez dans la console Firebase que Storage est activé (forfait Blaze) et que ses règles sont publiées.'
   if (code.includes('storage/')) return 'L’envoi de la photo a échoué. Vérifiez que Storage est activé dans Firebase.'
   return (e as Error)?.message ?? 'Erreur inconnue.'
 }
@@ -255,21 +259,27 @@ function Editeur({
     e.target.value = ''
     if (!liste.length) return
     setErreur('')
-    const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage')
-    const ajoutees: Visuel[] = []
+    const { ref, uploadBytesResumable, getDownloadURL } = await import('firebase/storage')
     try {
       for (const [i, f] of liste.entries()) {
-        setEnvoi(`Envoi de la photo ${i + 1} sur ${liste.length}…`)
+        const etape = `Photo ${i + 1} sur ${liste.length}`
+        setEnvoi(`${etape} : préparation…`)
         const blob = await compresser(f)
         const r = ref(s.storage, `publications/${p.id}/${Date.now()}-${i}.jpg`)
-        await uploadBytes(r, blob, { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' })
-        ajoutees.push({ src: await getDownloadURL(r), legende: p.titre || 'Photo', teinte: 'encre' })
+        const tache = uploadBytesResumable(r, blob, { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' })
+        tache.on('state_changed', (t) =>
+          setEnvoi(`${etape} : ${Math.round((t.bytesTransferred / Math.max(t.totalBytes, 1)) * 100)} %`),
+        )
+        await tache
+        const visuel: Visuel = { src: await getDownloadURL(r), legende: p.titre || 'Photo', teinte: 'encre' }
+        // Chaque photo apparaît dès qu'elle est envoyée.
+        setP((x) => ({ ...x, visuels: [...(x.visuels ?? []), visuel] }))
       }
     } catch (err) {
+      console.error(err)
       setErreur(messageErreur(err))
     } finally {
       setEnvoi('')
-      setP((x) => ({ ...x, visuels: [...(x.visuels ?? []), ...ajoutees] }))
     }
   }
 
