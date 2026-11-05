@@ -6,10 +6,31 @@ const TEINTES: Record<V['teinte'], { fond: string; texte: string; trait: string 
   papier: { fond: '#ecebe7', texte: 'var(--color-encre)', trait: 'rgba(210,0,18,.85)' },
 }
 
-/** Affiche la photo, ou à défaut un visuel façon tract avec la légende en gros. */
+/**
+ * Affiche la photo entière, jamais recadrée : si elle n'a pas la forme du cadre,
+ * le reste est rempli par la même photo floutée. À défaut de photo, un visuel façon tract.
+ */
 export function Visuel({ visuel, className = '' }: { visuel: V; className?: string }) {
   if (visuel.src) {
-    return <img src={visuel.src} alt={visuel.legende} loading="lazy" className={`size-full object-cover ${className}`} />
+    return (
+      <div className={`relative size-full overflow-hidden bg-encre ${className}`}>
+        <img
+          src={visuel.src}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="absolute inset-0 size-full scale-110 object-cover opacity-70 blur-2xl"
+        />
+        <img
+          src={visuel.src}
+          alt={visuel.legende}
+          loading="lazy"
+          width={visuel.largeur}
+          height={visuel.hauteur}
+          className="relative size-full object-contain"
+        />
+      </div>
+    )
   }
   const t = TEINTES[visuel.teinte]
   return (

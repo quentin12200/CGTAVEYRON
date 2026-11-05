@@ -31,18 +31,47 @@ function messageErreur(e: unknown): string {
   return (e as Error)?.message ?? 'Erreur inconnue.'
 }
 
-/** Réduit la photo (1600 px maximum) et la réenregistre en JPEG, sans ses métadonnées (position GPS…). */
-async function compresser(fichier: File): Promise<Blob> {
-  const image = await createImageBitmap(fichier, { imageOrientation: 'from-image' })
-  const echelle = Math.min(1, 1600 / Math.max(image.width, image.height))
+type PhotoPrete = { blob: Blob; largeur: number; hauteur: number }
+
+/** Ouvre la photo : createImageBitmap si possible, sinon une balise image (certains téléphones). */
+async function ouvrir(fichier: File): Promise<{ source: CanvasImageSource; largeur: number; hauteur: number; liberer: () => void }> {
+  try {
+    const b = await createImageBitmap(fichier, { imageOrientation: 'from-image' })
+    return { source: b, largeur: b.width, hauteur: b.height, liberer: () => b.close() }
+  } catch {
+    const url = URL.createObjectURL(fichier)
+    const img = new Image()
+    img.src = url
+    try {
+      await img.decode()
+    } catch {
+      URL.revokeObjectURL(url)
+      throw new Error(`« ${fichier.name} » n’est pas une photo lisible (format non pris en charge).`)
+    }
+    return { source: img, largeur: img.naturalWidth, hauteur: img.naturalHeight, liberer: () => URL.revokeObjectURL(url) }
+  }
+}
+
+/** Réduit la photo (1600 px maximum, sans la recadrer) et la réenregistre en JPEG, sans ses métadonnées (position GPS…). */
+async function compresser(fichier: File): Promise<PhotoPrete> {
+  const image = await ouvrir(fichier)
+  const echelle = Math.min(1, 1600 / Math.max(image.largeur, image.hauteur))
   const canvas = document.createElement('canvas')
-  canvas.width = Math.round(image.width * echelle)
-  canvas.height = Math.round(image.height * echelle)
-  canvas.getContext('2d')!.drawImage(image, 0, 0, canvas.width, canvas.height)
-  image.close()
-  return new Promise((ok, ko) =>
-    canvas.toBlob((b) => (b ? ok(b) : ko(new Error('Photo illisible.'))), 'image/jpeg', 0.82),
+  canvas.width = Math.round(image.largeur * echelle)
+  canvas.height = Math.round(image.hauteur * echelle)
+  try {
+    canvas.getContext('2d')!.drawImage(image.source, 0, 0, canvas.width, canvas.height)
+  } finally {
+    image.liberer()
+  }
+  const blob = await new Promise<Blob>((ok, ko) =>
+    canvas.toBlob((b) => (b ? ok(b) : ko(new Error(`« ${fichier.name} » n’a pas pu être préparée.`))), 'image/jpeg', 0.85),
   )
+  const prete = { blob, largeur: canvas.width, hauteur: canvas.height }
+  // Libère la mémoire tout de suite : indispensable sur téléphone quand on envoie beaucoup de photos.
+  canvas.width = 0
+  canvas.height = 0
+  return prete
 }
 
 /** Valeur pour un champ « date et heure » (AAAA-MM-JJTHH:MM). */
@@ -204,7 +233,7 @@ function Gestion({ s }: { s: Services }) {
           return (
             <li key={p.id} className={`flex gap-4 py-4 ${p.masque ? 'opacity-55' : ''}`}>
               <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-[var(--rule)]">
-                {photo && <img src={photo} alt="" className="size-full object-cover" loading="lazy" />}
+                {photo && <img src={photo} alt="" className="size-full object-contain" loading="lazy" />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold leading-snug">{p.titre}</p>
@@ -260,27 +289,39 @@ function Editeur({
     if (!liste.length) return
     setErreur('')
     const { ref, uploadBytesResumable, getDownloadURL } = await import('firebase/storage')
-    try {
-      for (const [i, f] of liste.entries()) {
-        const etape = `Photo ${i + 1} sur ${liste.length}`
+    const echecs: string[] = []
+    // Une photo à la fois : moins de mémoire sur le téléphone, et une photo en échec n'arrête pas les autres.
+    for (const [i, f] of liste.entries()) {
+      const etape = `Photo ${i + 1} sur ${liste.length}`
+      try {
         setEnvoi(`${etape} : préparation…`)
-        const blob = await compresser(f)
-        const r = ref(s.storage, `publications/${p.id}/${Date.now()}-${i}.jpg`)
-        const tache = uploadBytesResumable(r, blob, { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' })
+        const photo = await compresser(f)
+        const r = ref(s.storage, `publications/${p.id}/${Date.now()}-${i}-${Math.random().toString(36).slice(2, 7)}.jpg`)
+        const tache = uploadBytesResumable(r, photo.blob, { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' })
         tache.on('state_changed', (t) =>
           setEnvoi(`${etape} : ${Math.round((t.bytesTransferred / Math.max(t.totalBytes, 1)) * 100)} %`),
         )
         await tache
-        const visuel: Visuel = { src: await getDownloadURL(r), legende: p.titre || 'Photo', teinte: 'encre' }
+        const visuel: Visuel = {
+          src: await getDownloadURL(r),
+          legende: p.titre || 'Photo',
+          teinte: 'encre',
+          largeur: photo.largeur,
+          hauteur: photo.hauteur,
+        }
         // Chaque photo apparaît dès qu'elle est envoyée.
         setP((x) => ({ ...x, visuels: [...(x.visuels ?? []), visuel] }))
+      } catch (err) {
+        console.error(f.name, err)
+        echecs.push(`${f.name} : ${messageErreur(err)}`)
+        // Storage absent ou refusé : inutile d'essayer les suivantes.
+        const code = (err as { code?: string })?.code ?? ''
+        if (/unauthorized|retry-limit|bucket/.test(code)) break
       }
-    } catch (err) {
-      console.error(err)
-      setErreur(messageErreur(err))
-    } finally {
-      setEnvoi('')
     }
+    setEnvoi('')
+    if (echecs.length)
+      setErreur(`${echecs.length} photo(s) n’ont pas pu être envoyées. ${echecs.join(' · ')}`)
   }
 
   const deplacer = (i: number, sens: -1 | 1) => {
@@ -342,8 +383,8 @@ function Editeur({
           <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {visuels.map((v, i) => (
               <li key={v.src ?? i} className="overflow-hidden rounded-xl border border-rule bg-surface">
-                <div className="aspect-[4/3] bg-[var(--rule)]">
-                  {v.src && <img src={v.src} alt={v.legende} className="size-full object-cover" />}
+                <div className="aspect-[4/3] bg-encre">
+                  {v.src && <img src={v.src} alt={v.legende} className="size-full object-contain" />}
                 </div>
                 <div className="p-2">
                   <input
@@ -371,7 +412,7 @@ function Editeur({
         <button type="button" onClick={() => fichiers.current?.click()} disabled={!!envoi} className={`${boutonLigne} mt-3`}>
           {envoi || 'Ajouter des photos'}
         </button>
-        <p className="mt-2 text-sm text-muted">La première photo s’affiche en premier dans le fil. Les photos sont réduites et leurs données de position retirées avant l’envoi.</p>
+        <p className="mt-2 text-sm text-muted">Vous pouvez en choisir plusieurs d’un coup. Elles s’affichent entières sur le site, jamais recadrées. La première s’affiche en premier dans le fil. Elles sont réduites et leurs données de position retirées avant l’envoi.</p>
       </fieldset>
 
       <div className="grid gap-6 sm:grid-cols-2">

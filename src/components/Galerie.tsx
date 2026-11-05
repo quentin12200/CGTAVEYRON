@@ -3,28 +3,170 @@ import { AnimatePresence, motion } from 'motion/react'
 import type { Visuel as V } from '../data/types'
 import { Visuel } from './Visuel'
 
-/** Galerie glissable au doigt, avec ouverture plein écran. */
+/** Hauteur / largeur d'une photo (null si inconnue). */
+const proportion = (v: V) => (v.largeur && v.hauteur ? v.hauteur / v.largeur : null)
+
+/**
+ * Forme du cadre : celle des photos elles-mêmes, entre le format paysage 16:9 et le portrait 4:5.
+ * Une photo plus haute ou plus large reste entière, avec un fond flou de chaque côté.
+ */
+function formeDuCadre(visuels: V[], mesurees: Record<number, number>) {
+  const p = visuels.map((v, i) => proportion(v) ?? mesurees[i]).filter((x): x is number => !!x)
+  const voulu = p.length ? Math.max(...p) : 3 / 4
+  return Math.min(Math.max(voulu, 9 / 16), 5 / 4)
+}
+
+/** Galerie du fil : photos entières, glissables au doigt, avec ouverture plein écran. */
 export function Galerie({ visuels, id }: { visuels: V[]; id: string }) {
   const piste = useRef<HTMLDivElement>(null)
   const [actif, setActif] = useState(0)
   const [plein, setPlein] = useState<number | null>(null)
+  const [mesurees, setMesurees] = useState<Record<number, number>>({})
+  const plusieurs = visuels.length > 1
 
   const onScroll = () => {
     const el = piste.current
     if (el) setActif(Math.round(el.scrollLeft / el.clientWidth))
   }
-
   const aller = (i: number) => {
     const el = piste.current
     if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
   }
 
+  // Photos sans dimensions enregistrées : on les mesure une fois chargées.
   useEffect(() => {
-    if (plein === null) return
+    visuels.forEach((v, i) => {
+      if (!v.src || proportion(v)) return
+      const img = new Image()
+      img.onload = () => setMesurees((m) => ({ ...m, [i]: img.naturalHeight / img.naturalWidth }))
+      img.src = v.src
+    })
+  }, [visuels])
+
+  return (
+    <div className="group relative bg-encre" id={`galerie-${id}`}>
+      <div
+        ref={piste}
+        onScroll={onScroll}
+        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ aspectRatio: `1 / ${formeDuCadre(visuels, mesurees)}` }}
+      >
+        {visuels.map((v, i) => (
+          <button
+            key={v.src ?? i}
+            type="button"
+            onClick={() => setPlein(i)}
+            className="h-full w-full shrink-0 snap-center"
+            aria-label={`Agrandir la photo ${i + 1} : ${v.legende}`}
+          >
+            <Visuel visuel={v} />
+          </button>
+        ))}
+      </div>
+
+      {plusieurs && (
+        <>
+          <span className="pointer-events-none absolute top-3 right-3 rounded-full bg-black/55 px-2.5 py-1 text-sm font-semibold text-white tabular-nums">
+            {actif + 1} / {visuels.length}
+          </span>
+          {visuels.length <= 12 && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+              {visuels.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => aller(i)}
+                  aria-label={`Photo ${i + 1} sur ${visuels.length}`}
+                  className={`pointer-events-auto h-1.5 rounded-full bg-white shadow transition-all duration-300 ${
+                    i === actif ? 'w-6 opacity-100' : 'w-1.5 opacity-60'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+          <Fleche sens={-1} cache={actif === 0} onClick={() => aller(actif - 1)} />
+          <Fleche sens={1} cache={actif === visuels.length - 1} onClick={() => aller(actif + 1)} />
+        </>
+      )}
+
+      <Visionneuse visuels={visuels} index={plein} changer={setPlein} />
+    </div>
+  )
+}
+
+/** Flèches précédent / suivant, visibles au survol sur ordinateur. */
+function Fleche({ sens, cache, onClick }: { sens: -1 | 1; cache: boolean; onClick: () => void }) {
+  if (cache) return null
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={sens < 0 ? 'Photo précédente' : 'Photo suivante'}
+      className={`absolute top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-encre opacity-0 shadow transition-opacity group-hover:opacity-100 focus-visible:opacity-100 sm:grid ${
+        sens < 0 ? 'left-3' : 'right-3'
+      }`}
+    >
+      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+        <path d={sens < 0 ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'} />
+      </svg>
+    </button>
+  )
+}
+
+/** Toutes les photos l'une sous l'autre, entières (page d'une publication). */
+export function PhotosEnPile({ visuels }: { visuels: V[] }) {
+  const [plein, setPlein] = useState<number | null>(null)
+  return (
+    <div className="flex flex-col gap-3">
+      {visuels.map((v, i) =>
+        v.src ? (
+          <button
+            key={v.src}
+            type="button"
+            onClick={() => setPlein(i)}
+            className="block overflow-hidden bg-[var(--rule)] sm:rounded-2xl"
+            aria-label={`Agrandir la photo ${i + 1} : ${v.legende}`}
+          >
+            <img
+              src={v.src}
+              alt={v.legende}
+              width={v.largeur}
+              height={v.hauteur}
+              loading={i < 2 ? 'eager' : 'lazy'}
+              className="block h-auto w-full"
+            />
+          </button>
+        ) : (
+          <div key={i} className="aspect-[4/3] overflow-hidden sm:rounded-2xl">
+            <Visuel visuel={v} />
+          </div>
+        ),
+      )}
+      <Visionneuse visuels={visuels} index={plein} changer={setPlein} />
+    </div>
+  )
+}
+
+/** Plein écran : photo entière sur fond noir, glisser ou flèches pour changer. */
+function Visionneuse({
+  visuels,
+  index,
+  changer,
+}: {
+  visuels: V[]
+  index: number | null
+  changer: (i: number | null) => void
+}) {
+  const plusieurs = visuels.length > 1
+  const suivante = () => index !== null && changer(Math.min(index + 1, visuels.length - 1))
+  const precedente = () => index !== null && changer(Math.max(index - 1, 0))
+
+  useEffect(() => {
+    if (index === null) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPlein(null)
-      if (e.key === 'ArrowRight') setPlein((p) => (p === null ? p : Math.min(p + 1, visuels.length - 1)))
-      if (e.key === 'ArrowLeft') setPlein((p) => (p === null ? p : Math.max(p - 1, 0)))
+      if (e.key === 'Escape') changer(null)
+      if (e.key === 'ArrowRight') changer(Math.min(index + 1, visuels.length - 1))
+      if (e.key === 'ArrowLeft') changer(Math.max(index - 1, 0))
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -32,88 +174,71 @@ export function Galerie({ visuels, id }: { visuels: V[]; id: string }) {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [plein, visuels.length])
+  }, [index, visuels.length, changer])
 
-  const plusieurs = visuels.length > 1
+  const v = index === null ? null : visuels[index]
 
   return (
-    <div className="relative">
-      <div
-        ref={piste}
-        onScroll={onScroll}
-        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {visuels.map((v, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setPlein(i)}
-            className="aspect-[4/3] w-full shrink-0 snap-center overflow-hidden"
-            aria-label={`Agrandir : ${v.legende}`}
-          >
-            <motion.div layoutId={`${id}-${i}`} className="size-full">
-              <Visuel visuel={v} />
-            </motion.div>
-          </button>
-        ))}
-      </div>
-
-      {plusieurs && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
-          {visuels.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => aller(i)}
-              aria-label={`Image ${i + 1} sur ${visuels.length}`}
-              className={`pointer-events-auto h-1.5 rounded-full bg-white shadow transition-all duration-300 ${
-                i === actif ? 'w-6 opacity-100' : 'w-1.5 opacity-60'
-              }`}
-            />
-          ))}
-        </div>
-      )}
-
-      <AnimatePresence>
-        {plein !== null && (
-          <motion.div
-            className="fixed inset-0 z-50 flex flex-col bg-black/92"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Image en plein écran"
-            onClick={() => setPlein(null)}
-          >
-            <div className="flex items-center justify-between p-4 text-white">
-              <span className="text-sm text-white/70">
-                {plusieurs ? `${plein + 1} / ${visuels.length}` : ''}
-              </span>
-              <button type="button" className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
-                <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-              </button>
-            </div>
-            <div className="flex flex-1 items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+    <AnimatePresence>
+      {v && index !== null && (
+        <motion.div
+          className="fixed inset-0 z-50 flex flex-col bg-black"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo en plein écran"
+          onClick={() => changer(null)}
+        >
+          <div className="flex items-center justify-between p-4 text-white">
+            <span className="text-sm text-white/70 tabular-nums">{plusieurs ? `${index + 1} / ${visuels.length}` : ''}</span>
+            <button type="button" className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
+              <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+          </div>
+          <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16" onClick={(e) => e.stopPropagation()}>
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                layoutId={`${id}-${plein}`}
-                className="aspect-[4/3] w-full max-w-4xl overflow-hidden rounded-xl"
+                key={index}
+                className="flex size-full items-center justify-center"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
                 drag={plusieurs ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.6}
                 onDragEnd={(_, info) => {
-                  if (info.offset.x < -60) setPlein((p) => Math.min((p ?? 0) + 1, visuels.length - 1))
-                  if (info.offset.x > 60) setPlein((p) => Math.max((p ?? 0) - 1, 0))
+                  if (info.offset.x < -60) suivante()
+                  if (info.offset.x > 60) precedente()
                 }}
               >
-                <Visuel visuel={visuels[plein]} />
+                {v.src ? (
+                  <img src={v.src} alt={v.legende} draggable={false} className="max-h-full max-w-full select-none object-contain" />
+                ) : (
+                  <div className="aspect-[4/3] w-full max-w-4xl overflow-hidden rounded-xl">
+                    <Visuel visuel={v} />
+                  </div>
+                )}
               </motion.div>
-            </div>
-            <p className="p-6 text-center text-white/80">{visuels[plein].legende}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            </AnimatePresence>
+            {plusieurs && index > 0 && (
+              <button type="button" onClick={precedente} aria-label="Photo précédente" className="absolute left-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:grid">
+                <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+              </button>
+            )}
+            {plusieurs && index < visuels.length - 1 && (
+              <button type="button" onClick={suivante} aria-label="Photo suivante" className="absolute right-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:grid">
+                <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+              </button>
+            )}
+          </div>
+          {v.legende && <p className="p-5 text-center text-white/80">{v.legende}</p>}
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
