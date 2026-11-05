@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Règles Storage (photos) du site de l'UD CGT Aveyron.
+// À coller dans la console Firebase : Storage → Règles → Publier.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function estAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ['leyrat.quentin@gmail.com'];
+    }
+
+    match /publications/{id}/{fichier} {
+      allow read: if true;
+      // Photos seulement, 5 Mo maximum.
+      allow create, update: if estAdmin()
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024;
+      allow delete: if estAdmin();
+    }
+
+    match /{autres=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,11 +1,8 @@
 // Contenu du site en attendant Firestore (étape 2 de la feuille de route).
-// Publications : vraies publications de la page Facebook de l'UD (voir facebook.ts).
+// Publications : voir publications.ts (Facebook + Firestore).
 import type { Evenement, UnionLocale } from './types'
-import { publicationsFacebook } from './facebook'
 
 export const DEMO = false
-
-export const publications = publicationsFacebook
 
 // Rendez-vous réels uniquement, tirés des publications Facebook de l'UD : pas de date inventée.
 // Pas d'heure quand la publication n'en donne pas.

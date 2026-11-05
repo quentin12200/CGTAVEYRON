@@ -21,7 +21,11 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 - `src/config.ts` — réglages à compléter (lien d'adhésion, Facebook, e-mail de l'UD).
 - `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
-- `src/data/demo.ts` — contenu du site en attendant Firestore (étape 2) : agenda, unions locales, et publications reprises de `facebook.ts`. Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
+- `src/data/publications.ts` — publications du site : `facebook.ts` + collection Firestore `publications` en direct (un document Firestore remplace la publication importée de même `id` ; `masque: true` la retire du site). Hooks `usePublications()` / `useToutesPublications()`.
+- `src/lib/firebase.ts` — connexion Firebase chargée à la demande ; réglages lus dans `/__/firebase/init.json` (Firebase Hosting) ou `FIREBASE` dans `config.ts`. Sans Firebase, le site affiche les publications importées.
+- `src/pages/Admin.tsx` — `/admin` (non référencé) : connexion Google, nouvelle publication, modification, photos (réduites à 1600 px, métadonnées retirées, envoyées dans Storage `publications/{id}/`), mise à la une, retrait du site.
+- `firestore.rules`, `storage.rules` — droits : lecture publique, écriture réservée aux adresses listées dans `estAdmin()`. À coller dans la console (le déploiement GitHub ne publie que Hosting).
+- `src/data/demo.ts` — agenda et unions locales en attendant Firestore. Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
 - `src/data/facebook.ts` — vraies publications de la page Facebook de l'UD, générées depuis l'export CSV de Meta Business Suite (8 octobre → 5 novembre 2026). Heures de l'export en heure de Californie, converties en heure de Paris. Rappels répétés dédoublonnés, publications sans texte écartées. Les photos restent sur Facebook (lien « Voir sur Facebook »).
 - `public/photos/` — photos des publications (redimensionnées, métadonnées et position GPS retirées), reliées via `visuels` dans `facebook.ts`.
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
@@ -46,8 +50,8 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 ## Avancement
 
 - [x] Étape 1 — socle, design, routes, déploiement (contenu de démo)
-- [ ] Étape 2 — fil sur Firestore
+- [x] Étape 2 — fil sur Firestore (publications ; agenda et unions locales encore dans `demo.ts`)
 - [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
-- [ ] Étape 4 — mode administrateur `/admin`
+- [x] Étape 4 — mode administrateur `/admin` (publications et photos ; agenda à ajouter)
 - [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA. Les messages du formulaire doivent arriver à leyrat.quentin@gmail.com (destinataire à mettre côté serveur, Functions ou extension Trigger Email, jamais dans le code du site). Adresse publique affichée : ud@cgt12.fr (`SITE.email`). En attendant, le formulaire ouvre un e-mail prérempli vers ud@cgt12.fr.
 - [ ] Étape 6 — import des posts Facebook du dernier mois (textes importés dans `facebook.ts` ; reste : photos, puis passage dans Firestore)

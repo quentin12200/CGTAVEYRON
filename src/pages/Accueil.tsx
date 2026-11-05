@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LayoutGroup, motion } from 'motion/react'
-import { DEMO, evenements, publications } from '../data/demo'
+import { DEMO, evenements } from '../data/demo'
+import { usePublications } from '../data/publications'
 import { THEMES, type Theme } from '../data/types'
 import { Banderole } from '../components/Banderole'
 import { CartePublication } from '../components/CartePublication'
@@ -19,13 +20,14 @@ export function Accueil() {
     document.title = `${SITE.nom} — actualités`
   }, [])
 
+  const publications = usePublications()
   const epinglee = publications.find((p) => p.epingle)
   const fil = useMemo(
     () =>
       publications
         .filter((p) => p !== epinglee && (!filtre || p.theme === filtre))
         .sort((a, b) => b.date.localeCompare(a.date)),
-    [filtre, epinglee],
+    [publications, filtre, epinglee],
   )
   const visibles = fil.slice(0, nombre)
   const aujourdhui = new Date().toLocaleDateString('sv-SE')

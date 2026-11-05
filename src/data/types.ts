@@ -27,6 +27,8 @@ export type Publication = {
   /** Lien vers la publication d'origine sur Facebook (photos, vidéo). */
   lienFacebook?: string
   lienFacebookLibelle?: string
+  /** Retirée du site depuis l'administration (gardée pour pouvoir la remettre). */
+  masque?: boolean
 }
 
 export type Evenement = {
