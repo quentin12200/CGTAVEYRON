@@ -69,6 +69,14 @@ export function Header() {
               )}
             </NavLink>
           ))}
+          <a
+            href={SITE.busUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full px-4 py-2 font-medium text-muted transition-colors hover:text-[var(--text)]"
+          >
+            Inscription bus
+          </a>
           <Link
             to="/adherer"
             className="ml-3 rounded-full bg-rouge px-5 py-2 font-semibold text-white transition-colors hover:bg-rouge-fonce"
@@ -140,6 +148,22 @@ export function Header() {
                     </NavLink>
                   </motion.div>
                 ))}
+                <motion.div
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 + (NAV.length + 1) * 0.05 }}
+                >
+                  <a
+                    href={SITE.busUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOuvert(false)}
+                    className="block py-2 font-condensed text-5xl font-[850] leading-tight text-white/65"
+                  >
+                    Bus <span className="text-3xl" aria-hidden="true">↗</span>
+                    <span className="sr-only">: inscription aux bus (nouvel onglet)</span>
+                  </a>
+                </motion.div>
               </nav>
               <p className="mt-auto text-sm text-white/80">{SITE.nomLong}</p>
             </motion.div>

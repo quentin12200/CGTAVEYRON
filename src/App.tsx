@@ -13,7 +13,11 @@ import { Introuvable } from './pages/Introuvable'
 
 function RemonterEnHaut() {
   const { pathname } = useLocation()
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  // Accolades obligatoires : dans les navigateurs récents, scrollTo renvoie une promesse,
+  // que React prendrait pour une fonction de nettoyage (écran vide au changement de page).
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   return null
 }
 
