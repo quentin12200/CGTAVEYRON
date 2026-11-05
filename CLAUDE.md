@@ -7,7 +7,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 ## Pile technique
 
 - React 19 + Vite + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite`), animations avec `motion` (`motion/react`), routes avec `react-router-dom`.
-- Hébergement : Firebase Hosting, projet `cgtaveyron` (`.firebaserc`), adresse du site https://cgtaveyron-4bdd9.web.app. Firestore, Storage, Authentication et Functions arrivent aux étapes suivantes.
+- Hébergement : Firebase Hosting, projet `cgtaveyron` (`.firebaserc`), adresse du site https://cgtaveyron.web.app. Firestore, Storage, Authentication et Functions arrivent aux étapes suivantes.
 - Code sur GitHub (`quentin12200/CGTAVEYRON`), branche de production **`principal`**.
 - Déploiement : `.github/workflows/deploy.yml` (push sur `principal` → production) et `preview.yml` (pull request → version de test 7 jours). Secret requis : `FIREBASE_SERVICE_ACCOUNT_CGTAVEYRON`.
 
