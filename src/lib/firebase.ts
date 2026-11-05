@@ -28,10 +28,14 @@ export function services(): Promise<Services | null> {
   promesse ??= lireReglages().then((reglages) => {
     if (!reglages) return null
     const app = initializeApp(reglages)
+    const storage = getStorage(app)
+    // Par défaut, Firebase réessaie un envoi pendant 10 minutes sans rien dire : on abandonne au bout d'une minute.
+    storage.maxUploadRetryTime = 60_000
+    storage.maxOperationRetryTime = 30_000
     return {
       app,
       db: initializeFirestore(app, { ignoreUndefinedProperties: true }),
-      storage: getStorage(app),
+      storage,
       auth: getAuth(app),
     }
   })
