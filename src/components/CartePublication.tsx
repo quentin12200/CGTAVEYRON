@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import type { Publication } from '../data/types'
@@ -5,6 +6,22 @@ import { dateRelative } from '../lib/format'
 import { Galerie } from './Galerie'
 import { PastilleTheme } from './PastilleTheme'
 import { Partager, Reaction } from './Actions'
+
+/** Lien vers la publication : sur Facebook pour les publications importées (photos, vidéo), sinon sur le site. */
+function LienPublication({ pub, className, children }: { pub: Publication; className?: string; children: ReactNode }) {
+  if (pub.lienFacebook) {
+    return (
+      <a href={pub.lienFacebook} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    )
+  }
+  return (
+    <Link to={`/publication/${pub.id}`} className={className}>
+      {children}
+    </Link>
+  )
+}
 
 export function CartePublication({ pub }: { pub: Publication }) {
   const lien = `/publication/${pub.id}`
@@ -27,7 +44,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
         <>
           <div className="px-5 pt-3 pb-4">
             <h2 className="font-condensed text-[1.9rem] leading-[1.02] font-[800] text-balance">
-              <Link to={lien} className="hover:text-rouge">{pub.titre}</Link>
+              <LienPublication pub={pub} className="hover:text-rouge">{pub.titre}</LienPublication>
             </h2>
             {pub.unionLocale && <p className="mt-1 text-muted">{pub.unionLocale}</p>}
             {pub.texte && <p className="mt-3 line-clamp-3 max-w-[62ch]">{pub.texte}</p>}
@@ -37,7 +54,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
       ) : (
         <div className="px-5 pt-4 pb-2">
           <h2 className="border-l-4 border-rouge pl-4 font-condensed text-[2.4rem] leading-[0.98] font-[850] text-balance">
-            <Link to={lien} className="hover:text-rouge">{pub.titre}</Link>
+            <LienPublication pub={pub} className="hover:text-rouge">{pub.titre}</LienPublication>
           </h2>
           {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch] text-muted">{pub.texte}</p>}
         </div>
@@ -46,9 +63,9 @@ export function CartePublication({ pub }: { pub: Publication }) {
       <div className="flex items-center gap-1 px-3 py-3">
         <Reaction id={pub.id} />
         <Partager titre={pub.titre} chemin={lien} />
-        <Link to={lien} className="ml-auto rounded-full px-4 py-2 font-semibold text-rouge hover:bg-[var(--rule)]/60">
-          Lire
-        </Link>
+        <LienPublication pub={pub} className="ml-auto rounded-full px-4 py-2 font-semibold text-rouge hover:bg-[var(--rule)]/60">
+          {pub.lienFacebook ? (pub.lienFacebookLibelle === 'Voir la vidéo sur Facebook' ? 'Voir la vidéo' : 'Voir sur Facebook') : 'Lire'}
+        </LienPublication>
       </div>
     </motion.article>
   )
