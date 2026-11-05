@@ -5,6 +5,6 @@ export const SITE = {
   // Formulaire d'adhésion en ligne de la CGT.
   adhesionUrl: 'https://www.cgt.fr/syndicalisation/syndiquez-vous#forward',
   facebookUrl: 'https://www.facebook.com/udcgt.aveyron',
-  // TODO : adresse e-mail de l'UD qui reçoit les messages du formulaire.
-  email: '',
+  // Adresse publique de contact, affichée sur le site.
+  email: 'ud@cgt12.fr',
 }

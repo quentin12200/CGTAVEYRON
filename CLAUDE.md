@@ -48,5 +48,5 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - [ ] Étape 2 — fil sur Firestore
 - [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
 - [ ] Étape 4 — mode administrateur `/admin`
-- [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA
+- [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA. Les messages du formulaire doivent arriver à leyrat.quentin@gmail.com (destinataire à mettre côté serveur, Functions ou extension Trigger Email, jamais dans le code du site). Adresse publique affichée : ud@cgt12.fr (`SITE.email`). En attendant, le formulaire ouvre un e-mail prérempli vers ud@cgt12.fr.
 - [ ] Étape 6 — import des posts Facebook du dernier mois (textes importés dans `facebook.ts` ; reste : photos, puis passage dans Firestore)

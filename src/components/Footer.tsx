@@ -9,6 +9,9 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-3 max-w-sm text-muted">{SITE.nomLong}</p>
+          <p className="mt-1 text-muted">
+            <a href={`mailto:${SITE.email}`} className="hover:text-[var(--text)]">{SITE.email}</a>
+          </p>
         </div>
         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
           <li><Link className="hover:text-[var(--text)]" to="/agenda">Agenda</Link></li>

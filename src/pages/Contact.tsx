@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { unionsLocales } from '../data/demo'
 import { Page } from '../components/Page'
+import { SITE } from '../config'
 
 const champ =
   'mt-1.5 w-full rounded-xl border border-rule bg-surface px-4 py-3 text-base outline-none transition-[border-color,box-shadow] focus:border-rouge focus:ring-4 focus:ring-rouge/15'
@@ -9,9 +10,23 @@ const champ =
 export function Contact() {
   const [envoye, setEnvoye] = useState(false)
 
-  const envoyer = (e: FormEvent) => {
+  // En attendant l'étape 5 (Firestore + e-mail automatique), le message s'ouvre
+  // dans la messagerie du visiteur, déjà adressé à l'UD.
+  const envoyer = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // TODO étape 5 : enregistrer dans Firestore + extension Trigger Email.
+    const d = new FormData(e.currentTarget)
+    const champ = (n: string) => String(d.get(n) ?? '').trim()
+    const corps = [
+      champ('message'),
+      '',
+      `Nom : ${champ('nom')}`,
+      `Contact : ${champ('contact')}`,
+      champ('entreprise') && `Entreprise ou ville : ${champ('entreprise')}`,
+    ]
+      .filter((l) => l !== '')
+      .join('\n')
+    const sujet = `Message depuis le site : ${champ('nom')}`
+    window.location.href = `mailto:${SITE.email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`
     setEnvoye(true)
   }
 
@@ -48,6 +63,12 @@ export function Contact() {
 
         <section aria-labelledby="titre-ecrire">
           <h2 id="titre-ecrire" className="font-condensed text-3xl font-[850]">Nous écrire</h2>
+          <p className="mt-2 text-lg">
+            Par e-mail :{' '}
+            <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge hover:underline">
+              {SITE.email}
+            </a>
+          </p>
           <AnimatePresence mode="wait">
             {envoye ? (
               <motion.div
@@ -59,7 +80,9 @@ export function Contact() {
               >
                 <p className="font-condensed text-4xl font-[850] text-rouge">Message prêt</p>
                 <p className="mt-2 text-muted">
-                  Version de démonstration : l’envoi par e-mail à l’UD sera branché à l’étape 5. Rien n’a été envoyé.
+                  Votre messagerie s’est ouverte avec le message rempli. Appuyez sur « Envoyer » pour l’adresser à {SITE.email}.
+                  Rien ne s’est ouvert ? Écrivez directement à{' '}
+                  <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge underline">{SITE.email}</a>.
                 </p>
                 <button type="button" onClick={() => setEnvoye(false)} className="mt-4 font-semibold text-rouge underline">
                   Écrire un autre message
@@ -84,13 +107,13 @@ export function Contact() {
                   <textarea required name="message" rows={6} className={champ} />
                 </label>
                 <p className="text-sm text-muted">
-                  Vos coordonnées servent uniquement à vous répondre. Elles ne sont ni conservées sur le site ni transmises.
+                  Le bouton ouvre votre messagerie avec le message prêt à partir. Vos coordonnées servent uniquement à vous répondre : elles ne sont ni conservées sur le site ni transmises.
                 </p>
                 <button
                   type="submit"
                   className="h-12 self-start rounded-full bg-rouge px-7 font-semibold text-white transition-colors hover:bg-rouge-fonce"
                 >
-                  Envoyer le message
+                  Préparer l’e-mail
                 </button>
               </motion.form>
             )}
