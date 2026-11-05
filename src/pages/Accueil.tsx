@@ -137,7 +137,7 @@ export function Accueil() {
                     <div>
                       <p className="font-semibold leading-snug">{e.titre}</p>
                       <p className="text-sm text-muted">
-                        {e.heure}, {e.lieu}
+                        {[e.heure, e.lieu].filter(Boolean).join(', ')}
                       </p>
                     </div>
                   </li>

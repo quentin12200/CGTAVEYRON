@@ -25,7 +25,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - `src/data/facebook.ts` — vraies publications de la page Facebook de l'UD, générées depuis l'export CSV de Meta Business Suite (8 octobre → 5 novembre 2026). Heures de l'export en heure de Californie, converties en heure de Paris. Rappels répétés dédoublonnés, publications sans texte écartées. Les photos restent sur Facebook (lien « Voir sur Facebook »).
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (glissable + plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
-- `src/pages/` — Accueil, PublicationPage, Agenda, Adherer, Contact, MentionsLegales, Introuvable.
+- `src/pages/` — Accueil, PublicationPage, Agenda (« À venir » + « Ils ont eu lieu », lien Facebook par rendez-vous), Adherer, Contact, MentionsLegales, Introuvable.
 
 ## Design
 
@@ -48,5 +48,5 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - [ ] Étape 2 — fil sur Firestore
 - [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
 - [ ] Étape 4 — mode administrateur `/admin`
-- [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA
+- [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA. Les messages du formulaire doivent arriver à leyrat.quentin@gmail.com (destinataire à mettre côté serveur, Functions ou extension Trigger Email, jamais dans le code du site). Adresse publique affichée : ud@cgt12.fr (`SITE.email`). En attendant, le formulaire ouvre un e-mail prérempli vers ud@cgt12.fr.
 - [ ] Étape 6 — import des posts Facebook du dernier mois (textes importés dans `facebook.ts` ; reste : photos, puis passage dans Firestore)
