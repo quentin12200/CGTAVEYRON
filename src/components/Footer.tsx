@@ -17,6 +17,7 @@ export function Footer() {
           <li><Link className="hover:text-[var(--text)]" to="/agenda">Agenda</Link></li>
           <li><Link className="hover:text-[var(--text)]" to="/contact">Contact</Link></li>
           <li><Link className="hover:text-[var(--text)]" to="/adherer">Adhérer</Link></li>
+          <li><a className="hover:text-[var(--text)]" href={SITE.busUrl} target="_blank" rel="noopener noreferrer">Inscription bus</a></li>
           {SITE.facebookUrl && (
             <li><a className="hover:text-[var(--text)]" href={SITE.facebookUrl} rel="noopener">Facebook</a></li>
           )}
