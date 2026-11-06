@@ -24,7 +24,7 @@ export const REGLAGES_DEFAUT = {
   adhererRaison3Titre: 'Peser ensemble',
   adhererRaison3Texte: 'Plus nous sommes nombreux, plus nous obtenons sur les salaires et les conditions de travail.',
   adhererEncartTitre: 'Rejoindre la CGT',
-  adhererEncartTexte: 'En ligne en quelques minutes, ou auprès de votre union locale.',
+  adhererEncartTexte: 'En ligne, ou auprès de votre union locale.',
 
   contactIntro: 'L’Union départementale et les unions locales vous accueillent, syndiqué ou non.',
   agendaIntro: 'Manifestations, rassemblements, congrès et permanences de la CGT dans le département.',
