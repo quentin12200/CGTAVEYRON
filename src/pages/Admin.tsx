@@ -10,6 +10,7 @@ import { useToutesUnionsLocales } from '../data/unions'
 import { REGLAGES_DEFAUT, RUBRIQUES, useReglages, type Reglages } from '../data/reglages'
 import { THEMES, type Evenement, type Publication, type UnionLocale, type Visuel } from '../data/types'
 import { formatJourMois, lireDate } from '../lib/format'
+import { videosYoutube } from '../lib/liens'
 
 const champ =
   'mt-1.5 w-full rounded-xl border border-rule bg-surface px-4 py-3 text-base font-normal outline-none transition-[border-color,box-shadow] focus:border-rouge focus:ring-4 focus:ring-rouge/15'
@@ -380,6 +381,11 @@ function Editeur({
       <label className="font-semibold">
         Texte
         <textarea value={p.texte} onChange={(e) => maj({ texte: e.target.value })} rows={7} className={champ} />
+        <span className="mt-1.5 block text-sm font-normal text-muted">
+          {videosYoutube(p.texte).length
+            ? `Vidéo YouTube repérée : sa vignette s’affichera${p.visuels?.length ? ' sur la page de la publication' : ' dans le fil et sur la page'}.`
+            : 'Collez un lien YouTube dans le texte pour afficher la vignette de la vidéo.'}
+        </span>
       </label>
 
       <fieldset>

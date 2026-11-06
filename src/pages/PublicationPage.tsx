@@ -2,6 +2,9 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { usePublications } from '../data/publications'
 import { PhotosEnPile } from '../components/Galerie'
+import { TexteAvecLiens } from '../components/TexteAvecLiens'
+import { VideoYoutube } from '../components/VideoYoutube'
+import { videosYoutube } from '../lib/liens'
 import { PastilleTheme } from '../components/PastilleTheme'
 import { Partager, Reaction } from '../components/Actions'
 import { formatJourMois, lireDate } from '../lib/format'
@@ -41,9 +44,18 @@ export function PublicationPage() {
             {pub.titre}
           </h1>
           {pub.unionLocale && <p className="mt-3 text-lg text-muted">{pub.unionLocale}</p>}
-          {pub.texte && <p className="mt-6 max-w-[62ch] text-lg leading-relaxed whitespace-pre-line">{pub.texte}</p>}
+          {pub.texte && (
+            <p className="mt-6 max-w-[62ch] text-lg leading-relaxed whitespace-pre-line">
+              <TexteAvecLiens texte={pub.texte} />
+            </p>
+          )}
         </div>
 
+        {videosYoutube(pub.texte, pub.lienFacebook).map((id) => (
+          <div key={id} className="mb-1">
+            <VideoYoutube id={id} titre={pub.titre} />
+          </div>
+        ))}
         {pub.visuels?.length ? <PhotosEnPile visuels={pub.visuels} /> : null}
 
         <div className="flex flex-wrap items-center gap-1 px-3 py-3 sm:px-6">

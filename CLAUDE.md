@@ -32,6 +32,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - `public/photos/` — photos des publications (redimensionnées, métadonnées et position GPS retirées), reliées via `visuels` dans `facebook.ts`.
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (photos **jamais recadrées** : cadre à la forme des photos entre 16:9 et 4:5, fond flou autour ; `PhotosEnPile` sur la page de publication ; plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
+- `src/lib/liens.ts` + `components/TexteAvecLiens.tsx` + `components/VideoYoutube.tsx` — les adresses écrites dans le texte d'une publication deviennent des liens ; un lien YouTube (watch, youtu.be, shorts, live) affiche la vignette de la vidéo (dans le fil si la publication n'a pas de photo, toujours sur sa page). Seule l'image `i.ytimg.com` est chargée ; la vidéo se lance au toucher via `youtube-nocookie.com` (pas de traceur avant le geste du visiteur).
 - `src/pages/` — Accueil, PublicationPage, Agenda (« À venir » + « Ils ont eu lieu », lien Facebook par rendez-vous), Adherer, Contact, MentionsLegales, Introuvable.
 
 ## Design
