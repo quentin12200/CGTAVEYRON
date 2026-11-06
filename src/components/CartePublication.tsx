@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import type { Publication } from '../data/types'
 import { dateRelative } from '../lib/format'
 import { Galerie } from './Galerie'
+import { TexteAvecLiens } from './TexteAvecLiens'
+import { VideoYoutube } from './VideoYoutube'
+import { videosYoutube } from '../lib/liens'
 import { PastilleTheme } from './PastilleTheme'
 import { Partager, Reaction } from './Actions'
 
@@ -24,7 +27,8 @@ function LienPublication({ pub, className, children }: { pub: Publication; class
 
 export function CartePublication({ pub }: { pub: Publication }) {
   const lien = `/publication/${pub.id}`
-  const avecVisuel = !!pub.visuels?.length
+  const video = videosYoutube(pub.texte, pub.lienFacebook)[0]
+  const avecVisuel = !!pub.visuels?.length || !!video
 
   return (
     <article className="overflow-hidden border-t-4 border-[var(--text)] bg-surface">
@@ -40,16 +44,16 @@ export function CartePublication({ pub }: { pub: Publication }) {
               <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
             </h2>
             {pub.unionLocale && <p className="mt-1 text-muted">{pub.unionLocale}</p>}
-            {pub.texte && <p className="mt-3 line-clamp-3 max-w-[62ch]">{pub.texte}</p>}
+            {pub.texte && <p className="mt-3 line-clamp-3 max-w-[62ch]"><TexteAvecLiens texte={pub.texte} /></p>}
           </div>
-          <Galerie visuels={pub.visuels!} id={pub.id} />
+          {pub.visuels?.length ? <Galerie visuels={pub.visuels} id={pub.id} /> : <VideoYoutube id={video!} titre={pub.titre} />}
         </>
       ) : (
         <div className="px-5 pt-4 pb-2">
           <h2 className="font-condensed text-[2.1rem] leading-[0.98] font-[900] text-balance sm:text-[2.6rem]">
             <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
           </h2>
-          {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch]">{pub.texte}</p>}
+          {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch]"><TexteAvecLiens texte={pub.texte} /></p>}
         </div>
       )}
 
