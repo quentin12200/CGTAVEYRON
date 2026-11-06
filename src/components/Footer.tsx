@@ -2,28 +2,41 @@ import { Link } from 'react-router-dom'
 import { useReglages } from '../data/reglages'
 import { Logo } from './Logo'
 
+const lien = 'text-white/85 underline-offset-4 hover:text-white hover:underline'
+
+/** Bas de page : bandeau encre avec filet rouge, comme le bas d'un tract. */
 export function Footer() {
   const SITE = useReglages()
   return (
-    <footer className="mt-24 border-t border-rule">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto]">
+    <footer className="mt-24 border-t-8 border-rouge bg-encre text-white">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto] md:items-start">
         <div>
           <Logo />
-          <p className="mt-3 max-w-sm text-muted">{SITE.nomLong}</p>
-          <p className="mt-1 text-muted">
-            <a href={`mailto:${SITE.email}`} className="hover:text-[var(--text)]">{SITE.email}</a>
+          <p className="mt-4 max-w-sm font-condensed text-2xl leading-tight font-[850]">{SITE.nomLong}</p>
+          <p className="mt-2">
+            <a href={`mailto:${SITE.email}`} className={lien}>
+              {SITE.email}
+            </a>
           </p>
+          <Link
+            to="/adherer"
+            className="mt-6 inline-flex h-11 items-center rounded-full bg-rouge px-5 font-semibold text-white transition-colors hover:bg-rouge-fonce"
+          >
+            Adhérer
+          </Link>
         </div>
-        <ul className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
-          <li><Link className="hover:text-[var(--text)]" to="/agenda">Agenda</Link></li>
-          <li><Link className="hover:text-[var(--text)]" to="/contact">Contact</Link></li>
-          <li><Link className="hover:text-[var(--text)]" to="/adherer">Adhérer</Link></li>
-          <li><a className="hover:text-[var(--text)]" href={SITE.busUrl} target="_blank" rel="noopener noreferrer">Inscription bus</a></li>
-          {SITE.facebookUrl && (
-            <li><a className="hover:text-[var(--text)]" href={SITE.facebookUrl} rel="noopener">Facebook</a></li>
-          )}
-          <li><Link className="hover:text-[var(--text)]" to="/mentions-legales">Mentions légales</Link></li>
-        </ul>
+        <nav aria-label="Pied de page">
+          <ul className="grid grid-cols-2 gap-x-10 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
+            <li><Link className={lien} to="/agenda">Agenda</Link></li>
+            <li><Link className={lien} to="/contact">Contact</Link></li>
+            <li><Link className={lien} to="/adherer">Adhérer</Link></li>
+            <li><a className={lien} href={SITE.busUrl} target="_blank" rel="noopener noreferrer">Inscription bus</a></li>
+            {SITE.facebookUrl && (
+              <li><a className={lien} href={SITE.facebookUrl} target="_blank" rel="noopener noreferrer">Facebook</a></li>
+            )}
+            <li><Link className={lien} to="/mentions-legales">Mentions légales</Link></li>
+          </ul>
+        </nav>
       </div>
     </footer>
   )
