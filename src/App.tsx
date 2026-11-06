@@ -17,9 +17,10 @@ const Admin = lazy(() =>
 );
 
 /**
- * Certaines extensions de « mode sombre » repeignent en noir le fond des grands blocs (page, en-tête)
- * avec des règles « !important », sans changer la couleur du texte : titres noirs sur fond noir.
- * Une couleur posée directement sur l'élément avec « important » passe avant leurs règles.
+ * Certaines extensions de « mode sombre » repeignent en noir le fond des grands blocs (page, en-tête),
+ * parfois avec une priorité « utilisateur » qu'aucun style du site ne peut battre, sans changer la
+ * couleur du texte : titres noirs sur fond noir. Parade : fond posé en style en ligne « important »,
+ * doublé d'une image unie de la même couleur (ces extensions ne remplacent que la couleur de fond).
  */
 function ProtegerLeFond() {
   const { pathname } = useLocation();
@@ -33,9 +34,14 @@ function ProtegerLeFond() {
         document.querySelector("header"),
         document.querySelector("main"),
         ...document.querySelectorAll<HTMLElement>("main > div"),
+        ...document.querySelectorAll<HTMLElement>("aside, footer"),
       ];
       for (const el of blocs) {
         el?.style.setProperty("background-color", "var(--bg)", "important");
+        // Une extension peut imposer sa couleur de fond avec une priorité « utilisateur », qui passe avant
+        // tout style du site. Elle ne touche en général que la couleur : on peint donc le fond avec une
+        // image unie de la même couleur, qui se dessine par-dessus.
+        el?.style.setProperty("background-image", "linear-gradient(var(--bg), var(--bg))", "important");
         el?.style.setProperty("color", "var(--text)", "important");
       }
     };
