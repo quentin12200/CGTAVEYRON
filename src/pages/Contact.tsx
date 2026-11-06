@@ -37,15 +37,16 @@ export function Contact() {
       <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <section aria-labelledby="titre-ul">
           <h2 id="titre-ul" className="font-condensed text-3xl font-[850]">Nous trouver</h2>
-          <ul className="mt-4 divide-y divide-[var(--rule)] border-y border-rule">
+          <ul className="mt-4 divide-y divide-[var(--rule)] border-t-4 border-[var(--text)] bg-surface px-5 sm:px-7">
             {unionsLocales.map((ul) => (
               <li key={ul.id} className="py-5">
                 <p className="text-xl font-semibold">{ul.nom}</p>
-                {ul.adresse || ul.telephone || ul.permanences ? (
+                {ul.adresse || ul.telephone || ul.email || ul.permanences ? (
                   <div className="mt-1 text-muted">
-                    {ul.adresse && <p>{ul.adresse}</p>}
+                    {ul.adresse && <p className="whitespace-pre-line">{ul.adresse}</p>}
                     {ul.telephone && <p><a href={`tel:${ul.telephone}`} className="hover:text-rouge-texte">{ul.telephone}</a></p>}
-                    {ul.permanences && <p>{ul.permanences}</p>}
+                    {ul.email && <p><a href={`mailto:${ul.email}`} className="hover:text-rouge-texte">{ul.email}</a></p>}
+                    {ul.permanences && <p className="whitespace-pre-line">{ul.permanences}</p>}
                   </div>
                 ) : null}
               </li>
@@ -89,7 +90,7 @@ export function Contact() {
                 </button>
               </motion.div>
             ) : (
-              <motion.form key="form" onSubmit={envoyer} className="mt-4 flex flex-col gap-5" exit={{ opacity: 0 }}>
+              <motion.form key="form" onSubmit={envoyer} className="mt-4 flex flex-col gap-5 border-t-4 border-[var(--text)] bg-surface p-5 sm:p-7" exit={{ opacity: 0 }}>
                 <label className="font-semibold">
                   Nom
                   <input required name="nom" autoComplete="name" className={champ} />

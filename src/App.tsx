@@ -34,7 +34,7 @@ function ProtegerLeFond() {
         document.querySelector("header"),
         document.querySelector("main"),
         ...document.querySelectorAll<HTMLElement>("main > div"),
-        ...document.querySelectorAll<HTMLElement>("aside, footer"),
+        ...document.querySelectorAll<HTMLElement>("aside"),
       ];
       for (const el of blocs) {
         el?.style.setProperty("background-color", "var(--bg)", "important");
