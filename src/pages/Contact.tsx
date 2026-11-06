@@ -44,12 +44,10 @@ export function Contact() {
                 {ul.adresse || ul.telephone || ul.permanences ? (
                   <div className="mt-1 text-muted">
                     {ul.adresse && <p>{ul.adresse}</p>}
-                    {ul.telephone && <p><a href={`tel:${ul.telephone}`} className="hover:text-rouge">{ul.telephone}</a></p>}
+                    {ul.telephone && <p><a href={`tel:${ul.telephone}`} className="hover:text-rouge-texte">{ul.telephone}</a></p>}
                     {ul.permanences && <p>{ul.permanences}</p>}
                   </div>
-                ) : (
-                  <p className="mt-1 text-muted">Adresse, téléphone et permanences à compléter.</p>
-                )}
+                ) : null}
               </li>
             ))}
           </ul>
@@ -67,7 +65,7 @@ export function Contact() {
           <h2 id="titre-ecrire" className="font-condensed text-3xl font-[850]">Nous écrire</h2>
           <p className="mt-2 text-lg">
             Par e-mail :{' '}
-            <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge hover:underline">
+            <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge-texte hover:underline">
               {SITE.email}
             </a>
           </p>
@@ -80,13 +78,13 @@ export function Contact() {
                 className="mt-4 rounded-2xl bg-surface p-7"
                 role="status"
               >
-                <p className="font-condensed text-4xl font-[850] text-rouge">Message prêt</p>
+                <p className="font-condensed text-4xl font-[850] text-rouge-texte">Message prêt</p>
                 <p className="mt-2 text-muted">
                   Votre messagerie s’est ouverte avec le message rempli. Appuyez sur « Envoyer » pour l’adresser à {SITE.email}.
                   Rien ne s’est ouvert ? Écrivez directement à{' '}
-                  <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge underline">{SITE.email}</a>.
+                  <a href={`mailto:${SITE.email}`} className="font-semibold text-rouge-texte underline">{SITE.email}</a>.
                 </p>
-                <button type="button" onClick={() => setEnvoye(false)} className="mt-4 font-semibold text-rouge underline">
+                <button type="button" onClick={() => setEnvoye(false)} className="mt-4 font-semibold text-rouge-texte underline">
                   Écrire un autre message
                 </button>
               </motion.div>

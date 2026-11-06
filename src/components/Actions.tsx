@@ -55,7 +55,7 @@ export function Reaction({ id }: { id: string }) {
         {fait && rafale > 0 && (
           <motion.span
             key={`plus-${rafale}`}
-            className="pointer-events-none absolute -top-2 left-4 text-sm font-bold text-rouge"
+            className="pointer-events-none absolute -top-2 left-4 text-sm font-bold text-rouge-texte"
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 0, y: -28 }}
             exit={{ opacity: 0 }}

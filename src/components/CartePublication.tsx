@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'motion/react'
 import type { Publication } from '../data/types'
 import { dateRelative } from '../lib/format'
 import { Galerie } from './Galerie'
@@ -28,13 +27,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
   const avecVisuel = !!pub.visuels?.length
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden bg-surface sm:rounded-2xl"
-    >
+    <article className="overflow-hidden bg-surface sm:rounded-2xl">
       <div className="flex items-baseline justify-between gap-4 px-5 pt-5">
         <PastilleTheme theme={pub.theme} />
         <time dateTime={pub.date} className="text-sm text-muted">{dateRelative(pub.date)}</time>
@@ -44,7 +37,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
         <>
           <div className="px-5 pt-3 pb-4">
             <h2 className="font-condensed text-[1.9rem] leading-[1.02] font-[800] text-balance">
-              <LienPublication pub={pub} className="hover:text-rouge">{pub.titre}</LienPublication>
+              <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
             </h2>
             {pub.unionLocale && <p className="mt-1 text-muted">{pub.unionLocale}</p>}
             {pub.texte && <p className="mt-3 line-clamp-3 max-w-[62ch]">{pub.texte}</p>}
@@ -53,8 +46,8 @@ export function CartePublication({ pub }: { pub: Publication }) {
         </>
       ) : (
         <div className="px-5 pt-4 pb-2">
-          <h2 className="border-l-4 border-rouge pl-4 font-condensed text-[2.4rem] leading-[0.98] font-[850] text-balance">
-            <LienPublication pub={pub} className="hover:text-rouge">{pub.titre}</LienPublication>
+          <h2 className="border-l-4 border-rouge pl-4 font-condensed text-[2rem] leading-[0.98] sm:text-[2.4rem] font-[850] text-balance">
+            <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
           </h2>
           {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch] text-muted">{pub.texte}</p>}
         </div>
@@ -65,7 +58,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
         <Partager titre={pub.titre} chemin={lien} />
         <LienPublication
           pub={pub}
-          className="ml-auto flex h-10 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 font-semibold text-rouge hover:bg-[var(--rule)]/60"
+          className="ml-auto flex h-10 shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 font-semibold text-rouge-texte hover:bg-[var(--rule)]/60"
         >
           {pub.lienFacebook ? (
             <>
@@ -80,6 +73,6 @@ export function CartePublication({ pub }: { pub: Publication }) {
           )}
         </LienPublication>
       </div>
-    </motion.article>
+    </article>
   )
 }

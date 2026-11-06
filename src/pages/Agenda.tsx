@@ -22,7 +22,7 @@ function LigneEvenement({ e, passe }: { e: Evenement; passe: boolean }) {
   return (
     <li className="grid grid-cols-[4.5rem_1fr] gap-4 py-5 sm:grid-cols-[6rem_1fr_auto] sm:items-start">
       <div>
-        <div className={`font-condensed text-6xl leading-[0.85] font-[900] ${passe ? 'text-muted' : 'text-rouge'}`}>
+        <div className={`font-condensed text-6xl leading-[0.85] font-[900] ${passe ? 'text-muted' : 'text-rouge-texte'}`}>
           {numeroJour(e.date)}
         </div>
         <div className="mt-1 text-sm text-muted first-letter:uppercase">{formatJourSemaine(e.date)}</div>
@@ -36,7 +36,7 @@ function LigneEvenement({ e, passe }: { e: Evenement; passe: boolean }) {
             href={e.lienFacebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block font-semibold text-rouge hover:underline"
+            className="mt-2 inline-block font-semibold text-rouge-texte hover:underline"
           >
             {passe ? 'Voir les photos sur Facebook' : 'Voir l’annonce sur Facebook'}
           </a>
@@ -109,7 +109,7 @@ export function Agenda() {
               onClick={() => setVoirPasses((v) => !v)}
               aria-expanded={voirPasses}
               aria-controls="liste-passes"
-              className="font-semibold text-rouge hover:underline"
+              className="font-semibold text-rouge-texte hover:underline"
             >
               {voirPasses ? 'Masquer' : 'Afficher'}
             </button>

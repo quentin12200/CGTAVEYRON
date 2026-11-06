@@ -413,7 +413,7 @@ function Editeur({
             ))}
           </ul>
         )}
-        <input ref={fichiers} type="file" accept="image/*" multiple onChange={ajouterPhotos} className="sr-only" tabIndex={-1} />
+        <input ref={fichiers} type="file" accept="image/*" multiple aria-label="Choisir des photos" onChange={ajouterPhotos} className="sr-only" tabIndex={-1} />
         <button type="button" onClick={() => fichiers.current?.click()} disabled={!!envoi} className={`${boutonLigne} mt-3`}>
           {envoi || 'Ajouter des photos'}
         </button>
