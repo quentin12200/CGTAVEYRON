@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { unionsLocales } from '../data/demo'
+import { useUnionsLocales } from '../data/unions'
 import { Page } from '../components/Page'
-import { SITE } from '../config'
+import { useReglages } from '../data/reglages'
 
 const champ =
   'mt-1.5 w-full rounded-xl border border-rule bg-surface px-4 py-3 text-base outline-none transition-[border-color,box-shadow] focus:border-rouge focus:ring-4 focus:ring-rouge/15'
 
 export function Contact() {
+  const SITE = useReglages()
+  const unionsLocales = useUnionsLocales()
   const [envoye, setEnvoye] = useState(false)
 
   // En attendant l'étape 5 (Firestore + e-mail automatique), le message s'ouvre
@@ -31,7 +33,7 @@ export function Contact() {
   }
 
   return (
-    <Page titre="Contact" intro="L’Union départementale et les unions locales vous accueillent, syndiqué ou non.">
+    <Page titre="Contact" intro={SITE.contactIntro}>
       <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <section aria-labelledby="titre-ul">
           <h2 id="titre-ul" className="font-condensed text-3xl font-[850]">Nous trouver</h2>

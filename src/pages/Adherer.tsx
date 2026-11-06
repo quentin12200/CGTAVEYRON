@@ -1,16 +1,16 @@
 import { Link } from 'react-router-dom'
 import { Page } from '../components/Page'
-import { SITE } from '../config'
-
-const RAISONS = [
-  ['Être informé', 'Connaître vos droits, votre convention collective, ce qui se décide dans votre entreprise.'],
-  ['Être défendu', 'Un collectif et des militants formés à vos côtés en cas de problème avec l’employeur.'],
-  ['Peser ensemble', 'Plus nous sommes nombreux, plus nous obtenons sur les salaires et les conditions de travail.'],
-]
+import { useReglages } from '../data/reglages'
 
 export function Adherer() {
+  const SITE = useReglages()
+  const RAISONS = [
+    [SITE.adhererRaison1Titre, SITE.adhererRaison1Texte],
+    [SITE.adhererRaison2Titre, SITE.adhererRaison2Texte],
+    [SITE.adhererRaison3Titre, SITE.adhererRaison3Texte],
+  ]
   return (
-    <Page titre="Adhérer" intro="Se syndiquer, c’est ne plus être seul au travail. La cotisation ouvre droit à un crédit d’impôt de 66 %.">
+    <Page titre="Adhérer" intro={SITE.adhererIntro}>
       <div className="grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-16">
         <ul className="flex flex-col gap-8">
           {RAISONS.map(([titre, texte]) => (
@@ -21,8 +21,8 @@ export function Adherer() {
           ))}
         </ul>
         <div className="self-start rounded-2xl bg-rouge p-7 text-white">
-          <h2 className="font-condensed text-5xl leading-[0.9] font-[900]">Rejoindre la CGT</h2>
-          <p className="mt-4 text-white/85">En ligne en quelques minutes, ou auprès de votre union locale.</p>
+          <h2 className="font-condensed text-5xl leading-[0.9] font-[900]">{SITE.adhererEncartTitre}</h2>
+          <p className="mt-4 text-white/85">{SITE.adhererEncartTexte}</p>
           <a
             href={SITE.adhesionUrl}
             rel="noopener"

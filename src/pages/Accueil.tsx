@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LayoutGroup, motion } from 'motion/react'
-import { DEMO, evenements } from '../data/demo'
+import { DEMO } from '../data/demo'
+import { useEvenements } from '../data/evenements'
+import { useReglages } from '../data/reglages'
 import { usePublications } from '../data/publications'
 import { THEMES, type Theme } from '../data/types'
 import { Banderole } from '../components/Banderole'
@@ -21,6 +23,8 @@ export function Accueil() {
   }, [])
 
   const publications = usePublications()
+  const evenements = useEvenements()
+  const reglages = useReglages()
   const epinglee = publications.find((p) => p.epingle)
   const fil = useMemo(
     () =>
@@ -55,7 +59,7 @@ export function Accueil() {
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 pt-8 sm:px-6 lg:grid-cols-[minmax(0,640px)_1fr] lg:gap-14 lg:pt-12">
         <section aria-labelledby="titre-fil">
           <div className="px-4 sm:px-0">
-            <h2 id="titre-fil" className="font-condensed text-4xl font-[850]">Dernières publications</h2>
+            <h2 id="titre-fil" className="font-condensed text-4xl font-[850]">{reglages.accueilTitreFil}</h2>
             {DEMO && (
               <p className="mt-2 text-sm text-muted">
                 Contenu de démonstration. Les vraies publications arriveront avec le mode administrateur.
@@ -148,8 +152,8 @@ export function Accueil() {
             </section>
 
             <section className="rounded-2xl bg-encre p-6 text-white dark:bg-surface">
-              <h2 className="font-condensed text-4xl leading-none font-[850]">Seul on subit, ensemble on agit</h2>
-              <p className="mt-3 text-white/80">Adhérer à la CGT, c’est être informé, défendu et ne plus être seul face à l’employeur.</p>
+              <h2 className="font-condensed text-4xl leading-none font-[850]">{reglages.accueilEncartTitre}</h2>
+              <p className="mt-3 text-white/80">{reglages.accueilEncartTexte}</p>
               <Link
                 to="/adherer"
                 className="mt-5 inline-flex h-11 items-center rounded-full bg-rouge px-5 font-semibold transition-colors hover:bg-rouge-fonce"
@@ -159,8 +163,8 @@ export function Accueil() {
             </section>
 
             <section>
-              <h2 className="font-condensed text-3xl font-[850]">Besoin d’aide ?</h2>
-              <p className="mt-2 text-muted">Trouvez l’union locale la plus proche et ses permanences.</p>
+              <h2 className="font-condensed text-3xl font-[850]">{reglages.accueilAideTitre}</h2>
+              <p className="mt-2 text-muted">{reglages.accueilAideTexte}</p>
               <Link to="/contact" className="mt-3 inline-block font-semibold text-rouge hover:underline">
                 Nous trouver et nous écrire
               </Link>

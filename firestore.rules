@@ -12,12 +12,33 @@ service cloud.firestore {
         && request.auth.token.email in ['leyrat.quentin@gmail.com'];
     }
 
+    // Publications du fil.
     match /publications/{id} {
       allow read: if true;
       allow write: if estAdmin()
         && request.resource.data.titre is string
         && request.resource.data.titre.size() > 0
         && request.resource.data.date is string;
+    }
+
+    // Rendez-vous de l'agenda.
+    match /evenements/{id} {
+      allow read: if true;
+      allow write: if estAdmin()
+        && request.resource.data.titre is string
+        && request.resource.data.date is string;
+    }
+
+    // Unions locales (page Contact).
+    match /unionsLocales/{id} {
+      allow read: if true;
+      allow write: if estAdmin() && request.resource.data.nom is string;
+    }
+
+    // Liens et textes du site.
+    match /reglages/{id} {
+      allow read: if true;
+      allow write: if estAdmin();
     }
 
     // Tout le reste est fermé.

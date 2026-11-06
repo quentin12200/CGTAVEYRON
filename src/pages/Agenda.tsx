@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { evenements } from '../data/demo'
+import { useEvenements } from '../data/evenements'
 import type { Evenement } from '../data/types'
 import { Page } from '../components/Page'
-import { SITE } from '../config'
+import { useReglages } from '../data/reglages'
 import { formatJourSemaine, formatMois, numeroJour } from '../lib/format'
 
 /** Date du jour au format AAAA-MM-JJ, en heure locale. */
@@ -68,12 +68,14 @@ function ListeParMois({ liste, passe }: { liste: Evenement[]; passe: boolean }) 
 
 export function Agenda() {
   const [voirPasses, setVoirPasses] = useState(true)
+  const evenements = useEvenements()
+  const SITE = useReglages()
   const jour = aujourdhui()
   const aVenir = evenements.filter((e) => e.date >= jour).sort((a, b) => a.date.localeCompare(b.date))
   const passes = evenements.filter((e) => e.date < jour).sort((a, b) => b.date.localeCompare(a.date))
 
   return (
-    <Page titre="Agenda" intro="Manifestations, rassemblements, congrès et permanences de la CGT dans le département.">
+    <Page titre="Agenda" intro={SITE.agendaIntro}>
       <section aria-labelledby="titre-a-venir">
         <h2 id="titre-a-venir" className="font-condensed text-4xl font-[850]">À venir</h2>
         {aVenir.length > 0 ? (
