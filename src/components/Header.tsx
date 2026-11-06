@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { Logo } from './Logo'
-import { SITE } from '../config'
+import { SITE as CONFIG } from '../config'
+import { useReglages } from '../data/reglages'
 
 const NAV = [
   { to: '/', label: 'Actualités' },
@@ -13,6 +14,7 @@ const NAV = [
 export function Header() {
   const [reduit, setReduit] = useState(false)
   const [ouvert, setOuvert] = useState(false)
+  const SITE = { ...useReglages(), nom: CONFIG.nom }
 
   useEffect(() => {
     const onScroll = () => setReduit(window.scrollY > 24)

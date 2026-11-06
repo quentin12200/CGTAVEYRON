@@ -21,11 +21,13 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 - `src/config.ts` — réglages à compléter (lien d'adhésion, Facebook, e-mail de l'UD).
 - `src/data/types.ts` — modèle de données (Publication, Evenement, UnionLocale). Reprendre ces champs pour Firestore.
-- `src/data/publications.ts` — publications du site : `facebook.ts` + collection Firestore `publications` en direct (un document Firestore remplace la publication importée de même `id` ; `masque: true` la retire du site). Hooks `usePublications()` / `useToutesPublications()`.
+- `src/data/enDirect.ts` — `listeEnDirect()` : une liste de base + une collection Firestore écoutée en direct (un document Firestore remplace l'élément de même `id` ; `masque: true` le retire du site).
+- `src/data/publications.ts` (`facebook.ts` + Firestore `publications`), `evenements.ts` (`demo.ts` + `evenements`), `unions.ts` (`demo.ts` + `unionsLocales`) — hooks `useXxx()` (visibles) et `useTousXxx()` (administration).
+- `src/data/reglages.ts` — liens et textes des pages (`REGLAGES_DEFAUT`, `RUBRIQUES` pour l'admin), document Firestore `reglages/site` (seuls les textes modifiés y sont enregistrés). Hook `useReglages()` ; les pages l'utilisent au lieu de `SITE`. Tout nouveau texte fixe d'une page doit y être ajouté pour rester modifiable.
 - `src/lib/firebase.ts` — connexion Firebase chargée à la demande ; réglages lus dans `/__/firebase/init.json` (Firebase Hosting) ou `FIREBASE` dans `config.ts`. Sans Firebase, le site affiche les publications importées.
-- `src/pages/Admin.tsx` — `/admin` (non référencé) : connexion Google, nouvelle publication, modification, photos (réduites à 1600 px, métadonnées retirées, envoyées dans Storage `publications/{id}/`), mise à la une, retrait du site.
+- `src/pages/Admin.tsx` — `/admin` (non référencé), connexion Google, quatre onglets : **Publications** (texte, photos réduites à 1600 px sans métadonnées dans Storage `publications/{id}/`, mise à la une, retrait), **Agenda**, **Contacts** (unions locales), **Site** (liens et textes). L'admin doit pouvoir tout modifier. Toujours en mode clair (classe `clair` sur `<html>`), même si le téléphone est en mode sombre.
 - `firestore.rules`, `storage.rules` — droits : lecture publique, écriture réservée aux adresses listées dans `estAdmin()`. À coller dans la console (le déploiement GitHub ne publie que Hosting).
-- `src/data/demo.ts` — agenda et unions locales en attendant Firestore. Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
+- `src/data/demo.ts` — agenda et unions locales de départ (complétés depuis `/admin`). Ne jamais y mettre de dates, d'adresses ou de chiffres inventés.
 - `src/data/facebook.ts` — vraies publications de la page Facebook de l'UD, générées depuis l'export CSV de Meta Business Suite (8 octobre → 5 novembre 2026). Heures de l'export en heure de Californie, converties en heure de Paris. Rappels répétés dédoublonnés, publications sans texte écartées. Les photos restent sur Facebook (lien « Voir sur Facebook »).
 - `public/photos/` — photos des publications (redimensionnées, métadonnées et position GPS retirées), reliées via `visuels` dans `facebook.ts`.
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
@@ -51,7 +53,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 - [x] Étape 1 — socle, design, routes, déploiement (contenu de démo)
 - [x] Étape 2 — fil sur Firestore (publications ; agenda et unions locales encore dans `demo.ts`)
-- [ ] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore
-- [x] Étape 4 — mode administrateur `/admin` (publications et photos ; agenda à ajouter)
+- [x] Étape 3 — pages Contact / Agenda / Adhérer sur Firestore (agenda, unions locales, liens et textes modifiables depuis `/admin`)
+- [x] Étape 4 — mode administrateur `/admin` (publications, photos, agenda, contacts, liens et textes)
 - [ ] Étape 5 — réactions partagées, formulaire de contact, aperçus Open Graph, PWA. Les messages du formulaire doivent arriver à leyrat.quentin@gmail.com (destinataire à mettre côté serveur, Functions ou extension Trigger Email, jamais dans le code du site). Adresse publique affichée : ud@cgt12.fr (`SITE.email`). En attendant, le formulaire ouvre un e-mail prérempli vers ud@cgt12.fr.
 - [ ] Étape 6 — import des posts Facebook du dernier mois (textes importés dans `facebook.ts` ; reste : photos, puis passage dans Firestore)

@@ -45,6 +45,8 @@ export type Evenement = {
   description?: string
   /** Publication Facebook qui annonce ou raconte le rendez-vous. */
   lienFacebook?: string
+  /** Retiré du site depuis l'administration. */
+  masque?: boolean
 }
 
 export type UnionLocale = {
@@ -54,4 +56,5 @@ export type UnionLocale = {
   telephone?: string
   email?: string
   permanences?: string
+  masque?: boolean
 }

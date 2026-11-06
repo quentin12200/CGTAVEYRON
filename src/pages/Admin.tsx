@@ -5,7 +5,10 @@ import { Link } from 'react-router-dom'
 import type { User } from 'firebase/auth'
 import { services, type Services } from '../lib/firebase'
 import { useToutesPublications } from '../data/publications'
-import { THEMES, type Publication, type Visuel } from '../data/types'
+import { useTousEvenements } from '../data/evenements'
+import { useToutesUnionsLocales } from '../data/unions'
+import { REGLAGES_DEFAUT, RUBRIQUES, useReglages, type Reglages } from '../data/reglages'
+import { THEMES, type Evenement, type Publication, type UnionLocale, type Visuel } from '../data/types'
 import { formatJourMois, lireDate } from '../lib/format'
 
 const champ =
@@ -106,6 +109,7 @@ export function Admin() {
     meta.name = 'robots'
     meta.content = 'noindex'
     document.head.appendChild(meta)
+    document.documentElement.classList.add('clair')
     let arret: (() => void) | undefined
     void services().then(async (sv) => {
       setS(sv)
@@ -115,6 +119,7 @@ export function Admin() {
     })
     return () => {
       meta.remove()
+      document.documentElement.classList.remove('clair')
       arret?.()
     }
   }, [])
@@ -160,7 +165,7 @@ export function Admin() {
               Se déconnecter
             </button>
           </p>
-          <Gestion s={s} />
+          <Onglets s={s} />
         </>
       )}
     </main>
@@ -181,7 +186,7 @@ function NonConfigure() {
   )
 }
 
-function Gestion({ s }: { s: Services }) {
+function GestionPublications({ s }: { s: Services }) {
   const publications = useToutesPublications()
   const [enCours, setEnCours] = useState<Publication | null>(null)
   const [info, setInfo] = useState('')
@@ -231,7 +236,7 @@ function Gestion({ s }: { s: Services }) {
         {publications.map((p) => {
           const photo = p.visuels?.find((v) => v.src)?.src
           return (
-            <li key={p.id} className={`flex gap-4 py-4 ${p.masque ? 'opacity-55' : ''}`}>
+            <li key={p.id} className={`flex gap-4 py-4 ${p.masque ? 'opacity-70' : ''}`}>
               <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-[var(--rule)]">
                 {photo && <img src={photo} alt="" className="size-full object-contain" loading="lazy" />}
               </div>
@@ -475,6 +480,312 @@ function Editeur({
           </Link>
         )}
       </div>
+    </form>
+  )
+}
+
+const ONGLETS = ['Publications', 'Agenda', 'Contacts', 'Site'] as const
+type Onglet = (typeof ONGLETS)[number]
+
+function Onglets({ s }: { s: Services }) {
+  const [onglet, setOnglet] = useState<Onglet>('Publications')
+  return (
+    <>
+      <div role="tablist" aria-label="Que modifier ?" className="mt-6 flex flex-wrap gap-2">
+        {ONGLETS.map((o) => (
+          <button
+            key={o}
+            type="button"
+            role="tab"
+            aria-selected={onglet === o}
+            onClick={() => setOnglet(o)}
+            className={`shrink-0 rounded-full border px-4 py-2 font-semibold transition-colors ${
+              onglet === o ? 'border-transparent bg-encre text-white' : 'border-rule text-muted hover:text-[var(--text)]'
+            }`}
+          >
+            {o}
+          </button>
+        ))}
+      </div>
+      {onglet === 'Publications' && <GestionPublications s={s} />}
+      {onglet === 'Agenda' && <GestionAgenda s={s} />}
+      {onglet === 'Contacts' && <GestionContacts s={s} />}
+      {onglet === 'Site' && <GestionSite s={s} />}
+    </>
+  )
+}
+
+/** Description d'un champ de formulaire pour les listes simples (agenda, contacts). */
+type Champ<T> = {
+  cle: keyof T & string
+  label: string
+  type?: 'texte' | 'long' | 'date' | 'lien' | 'tel' | 'email' | 'choix'
+  choix?: readonly string[]
+  requis?: boolean
+  aide?: string
+}
+
+async function enregistrerDoc(s: Services, collection: string, id: string, donnees: object) {
+  const { doc, setDoc } = await import('firebase/firestore')
+  await setDoc(doc(s.db, collection, id), donnees)
+}
+
+/** Liste modifiable : ajouter, modifier, retirer du site, remettre. */
+function GestionListe<T extends { id: string; masque?: boolean }>({
+  s,
+  collection,
+  elements,
+  champs,
+  nouveau,
+  titre,
+  libelleNouveau,
+  resume,
+}: {
+  s: Services
+  collection: string
+  elements: T[]
+  champs: Champ<T>[]
+  nouveau: () => T
+  titre: (x: T) => string
+  libelleNouveau: string
+  resume: (x: T) => string
+}) {
+  const [enCours, setEnCours] = useState<T | null>(null)
+  const [info, setInfo] = useState('')
+  const [erreur, setErreur] = useState('')
+  const [occupe, setOccupe] = useState(false)
+
+  const sauver = async (x: T, message: string) => {
+    setErreur('')
+    setOccupe(true)
+    try {
+      // Les champs vides sont retirés plutôt qu'enregistrés vides.
+      const propre = Object.fromEntries(
+        Object.entries(x).filter(([, v]) => v !== undefined && !(typeof v === 'string' && v.trim() === '')),
+      )
+      await enregistrerDoc(s, collection, x.id, propre)
+      setInfo(message)
+      setEnCours(null)
+      window.scrollTo(0, 0)
+    } catch (e) {
+      setErreur(messageErreur(e))
+    } finally {
+      setOccupe(false)
+    }
+  }
+
+  if (enCours) {
+    const maj = (cle: string, v: string) => setEnCours((x) => (x ? { ...x, [cle]: v } : x))
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          void sauver(enCours, `« ${titre(enCours)} » est enregistré et visible sur le site.`)
+        }}
+        className="mt-8 flex flex-col gap-6"
+      >
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-condensed text-3xl font-[850]">{elements.some((e) => e.id === enCours.id) ? 'Modifier' : libelleNouveau}</h2>
+          <button type="button" onClick={() => setEnCours(null)} className="font-semibold text-muted hover:underline">
+            Annuler
+          </button>
+        </div>
+        {champs.map((c) => {
+          const valeur = String((enCours as Record<string, unknown>)[c.cle] ?? '')
+          const etiquette = (
+            <>
+              {c.label} {!c.requis && <span className="font-normal text-muted">(facultatif)</span>}
+              {c.aide && <span className="block text-sm font-normal text-muted">{c.aide}</span>}
+            </>
+          )
+          if (c.type === 'long')
+            return (
+              <label key={c.cle} className="font-semibold">
+                {etiquette}
+                <textarea required={c.requis} value={valeur} onChange={(e) => maj(c.cle, e.target.value)} rows={4} className={champ} />
+              </label>
+            )
+          if (c.type === 'choix')
+            return (
+              <label key={c.cle} className="font-semibold">
+                {etiquette}
+                <select value={valeur} onChange={(e) => maj(c.cle, e.target.value)} className={champ}>
+                  {c.choix!.map((o) => (
+                    <option key={o}>{o}</option>
+                  ))}
+                </select>
+              </label>
+            )
+          const types: Record<string, string> = { date: 'date', lien: 'url', tel: 'tel', email: 'email' }
+          const type = types[c.type ?? ''] ?? 'text'
+          return (
+            <label key={c.cle} className="font-semibold">
+              {etiquette}
+              <input type={type} required={c.requis} value={valeur} onChange={(e) => maj(c.cle, e.target.value)} className={champ} />
+            </label>
+          )
+        })}
+        {erreur && <p className="font-semibold text-rouge" role="alert">{erreur}</p>}
+        <button type="submit" disabled={occupe} className={`${boutonRouge} self-start`}>
+          {occupe ? 'Enregistrement…' : 'Enregistrer'}
+        </button>
+      </form>
+    )
+  }
+
+  return (
+    <section className="mt-8">
+      <button type="button" onClick={() => setEnCours(nouveau())} className={boutonRouge}>
+        {libelleNouveau}
+      </button>
+      {info && <p className="mt-4 font-semibold" role="status">{info}</p>}
+      {erreur && <p className="mt-4 font-semibold text-rouge" role="alert">{erreur}</p>}
+      <ul className="mt-8 divide-y divide-[var(--rule)] border-y border-rule">
+        {elements.map((x) => (
+          <li key={x.id} className={`py-4 ${x.masque ? 'opacity-70' : ''}`}>
+            <p className="font-semibold leading-snug">{titre(x)}</p>
+            <p className="mt-0.5 text-sm text-muted">
+              {resume(x)}
+              {x.masque && ' · Retiré du site'}
+            </p>
+            <div className="mt-2 flex gap-4 text-sm font-semibold">
+              <button type="button" onClick={() => setEnCours(x)} className="text-rouge hover:underline">
+                Modifier
+              </button>
+              <button
+                type="button"
+                disabled={occupe}
+                onClick={() => sauver({ ...x, masque: !x.masque }, x.masque ? `« ${titre(x)} » est de nouveau sur le site.` : `« ${titre(x)} » est retiré du site.`)}
+                className="text-muted hover:underline"
+              >
+                {x.masque ? 'Remettre sur le site' : 'Retirer du site'}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+const TYPES_EVENEMENT = ['Manifestation', 'Rassemblement', 'Congrès', 'Assemblée', 'Formation', 'Permanence'] as const
+
+function GestionAgenda({ s }: { s: Services }) {
+  // Les plus récents en haut.
+  const evenements = [...useTousEvenements()].reverse()
+  return (
+    <GestionListe<Evenement>
+      s={s}
+      collection="evenements"
+      elements={evenements}
+      libelleNouveau="Nouveau rendez-vous"
+      nouveau={() => ({ id: `rdv-${Date.now().toString(36)}`, titre: '', date: maintenant().slice(0, 10), lieu: '', type: 'Manifestation' })}
+      titre={(e) => e.titre || 'Rendez-vous'}
+      resume={(e) => `${formatJourMois(e.date)} ${lireDate(e.date).getFullYear()}${e.heure ? `, ${e.heure}` : ''} · ${e.lieu} · ${e.type}`}
+      champs={[
+        { cle: 'titre', label: 'Titre', requis: true },
+        { cle: 'date', label: 'Date', type: 'date', requis: true },
+        { cle: 'heure', label: 'Heure', aide: 'Par exemple : 14 h 30' },
+        { cle: 'lieu', label: 'Lieu', requis: true, aide: 'Par exemple : Rodez, jardin public' },
+        { cle: 'type', label: 'Type', type: 'choix', choix: TYPES_EVENEMENT, requis: true },
+        { cle: 'description', label: 'Description', type: 'long' },
+        { cle: 'lienFacebook', label: 'Lien Facebook', type: 'lien' },
+      ]}
+    />
+  )
+}
+
+function GestionContacts({ s }: { s: Services }) {
+  return (
+    <GestionListe<UnionLocale>
+      s={s}
+      collection="unionsLocales"
+      elements={useToutesUnionsLocales()}
+      libelleNouveau="Nouvelle union locale"
+      nouveau={() => ({ id: `ul-${Date.now().toString(36)}`, nom: '' })}
+      titre={(u) => u.nom || 'Union locale'}
+      resume={(u) => [u.adresse, u.telephone, u.email].filter(Boolean).join(' · ') || 'Coordonnées à compléter'}
+      champs={[
+        { cle: 'nom', label: 'Nom', requis: true },
+        { cle: 'adresse', label: 'Adresse', type: 'long' },
+        { cle: 'telephone', label: 'Téléphone', type: 'tel' },
+        { cle: 'email', label: 'E-mail', type: 'email' },
+        { cle: 'permanences', label: 'Permanences', type: 'long', aide: 'Par exemple : le mardi de 14 h à 17 h' },
+      ]}
+    />
+  )
+}
+
+/** Liens et textes des pages. Un champ vidé reprend le texte d'origine. */
+function GestionSite({ s }: { s: Services }) {
+  const actuels = useReglages()
+  const [valeurs, setValeurs] = useState<Reglages>(actuels)
+  const [touche, setTouche] = useState(false)
+  // Tant que rien n'est tapé, le formulaire suit les textes en ligne (ils peuvent arriver après l'ouverture).
+  useEffect(() => {
+    if (!touche) setValeurs(actuels)
+  }, [actuels, touche])
+  const [occupe, setOccupe] = useState(false)
+  const [info, setInfo] = useState('')
+  const [erreur, setErreur] = useState('')
+
+  const valider = async (e: FormEvent) => {
+    e.preventDefault()
+    setErreur('')
+    setInfo('')
+    setOccupe(true)
+    try {
+      // On n'enregistre que ce qui diffère du texte d'origine.
+      const modifies = Object.fromEntries(
+        Object.entries(valeurs)
+          .map(([k, v]) => [k, v.trim()])
+          .filter(([k, v]) => v && v !== REGLAGES_DEFAUT[k as keyof Reglages]),
+      )
+      await enregistrerDoc(s, 'reglages', 'site', modifies)
+      setTouche(false)
+      setInfo('Les liens et les textes sont enregistrés et visibles sur le site.')
+      window.scrollTo(0, 0)
+    } catch (err) {
+      setErreur(messageErreur(err))
+    } finally {
+      setOccupe(false)
+    }
+  }
+
+  return (
+    <form onSubmit={valider} className="mt-8 flex flex-col gap-10">
+      {info && <p className="font-semibold" role="status">{info}</p>}
+      <p className="text-muted">Videz un champ pour retrouver le texte d’origine.</p>
+      {RUBRIQUES.map((r) => (
+        <fieldset key={r.titre} className="flex flex-col gap-5">
+          <legend className="mb-4 font-condensed text-3xl font-[850]">{r.titre}</legend>
+          {r.champs.map((c) => {
+            const commun = {
+              value: valeurs[c.cle],
+              placeholder: REGLAGES_DEFAUT[c.cle],
+              onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                setTouche(true)
+                setValeurs((v) => ({ ...v, [c.cle]: e.target.value }))
+              },
+              className: champ,
+            }
+            return (
+              <label key={c.cle} className="font-semibold">
+                {c.label}
+                {c.type === 'long' ? (
+                  <textarea rows={3} {...commun} />
+                ) : (
+                  <input type={c.type === 'lien' ? 'url' : c.type === 'email' ? 'email' : 'text'} {...commun} />
+                )}
+              </label>
+            )
+          })}
+        </fieldset>
+      ))}
+      {erreur && <p className="font-semibold text-rouge" role="alert">{erreur}</p>}
+      <button type="submit" disabled={occupe} className={`${boutonRouge} sticky bottom-4 self-start shadow-lg`}>
+        {occupe ? 'Enregistrement…' : 'Enregistrer les liens et les textes'}
+      </button>
     </form>
   )
 }

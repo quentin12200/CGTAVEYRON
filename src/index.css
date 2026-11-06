@@ -38,6 +38,16 @@
     }
   }
 
+  /* Administration : toujours en clair et bien contrasté, même si le téléphone est en mode sombre. */
+  :root.clair {
+    --bg: var(--color-papier);
+    --surface: #ffffff;
+    --text: var(--color-encre);
+    --muted: #57525b;
+    --rule: #d6d3d9;
+    color-scheme: light;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }

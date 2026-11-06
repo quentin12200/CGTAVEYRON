@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { SITE } from '../config'
+import { useReglages } from '../data/reglages'
 import { Logo } from './Logo'
 
 export function Footer() {
+  const SITE = useReglages()
   return (
     <footer className="mt-24 border-t border-rule">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto]">
