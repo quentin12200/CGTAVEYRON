@@ -21,6 +21,21 @@
 
   --font-display: 'Archivo Variable', 'Arial Narrow', sans-serif;
   --font-sans: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+
+  /* Courbes de mouvement (skill emil-design-eng, voir CLAUDE.md). Mêmes valeurs dans src/lib/mouvement.ts. */
+  --ease-sortie: cubic-bezier(0.23, 1, 0.32, 1); /* ce qui apparaît ou disparaît */
+  --ease-deplacement: cubic-bezier(0.77, 0, 0.175, 1); /* ce qui se déplace à l'écran */
+  --ease-tiroir: cubic-bezier(0.32, 0.72, 0, 1); /* tiroir du menu mobile */
+}
+
+/* Tout ce qu'on touche répond tout de suite : léger enfoncement à l'appui. */
+@utility appui {
+  transition-property: color, background-color, border-color, opacity, scale;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-sortie);
+  &:active {
+    scale: 0.97;
+  }
 }
 
 @layer base {
@@ -99,12 +114,18 @@
   border-color: var(--rule);
 }
 
+/* « Réduire les animations » : moins de mouvement, pas zéro transition. On garde les fondus de couleur,
+   qui aident à comprendre ; on retire les déplacements et changements de taille. Les animations
+   faites avec motion sont gérées par <MotionConfig reducedMotion="user">. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transition-property: color, background-color, border-color, opacity !important;
+  }
+  .appui:active {
+    scale: none;
   }
 }

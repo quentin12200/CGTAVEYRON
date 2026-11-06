@@ -104,7 +104,7 @@ export function Accueil() {
                       setNombre(PAQUET)
                     }}
                     aria-pressed={actif}
-                    className={`relative isolate shrink-0 rounded-full border px-4 py-2 font-semibold transition-colors ${
+                    className={`appui relative isolate shrink-0 rounded-full border px-4 py-2 font-semibold ${
                       actif ? 'border-transparent text-white' : 'border-rule text-muted hover:text-[var(--text)]'
                     }`}
                   >
@@ -112,7 +112,7 @@ export function Accueil() {
                       <motion.span
                         layoutId="filtre-actif"
                         className="absolute inset-0 -z-10 rounded-full bg-encre dark:bg-rouge"
-                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                        transition={{ type: 'spring', duration: 0.25, bounce: 0 }}
                       />
                     )}
                     <span className="relative">{t ?? 'Tout'}</span>
@@ -176,7 +176,7 @@ export function Accueil() {
               <p className="mt-3 text-white/90">{reglages.accueilEncartTexte}</p>
               <Link
                 to="/adherer"
-                className="mt-5 inline-flex h-11 items-center rounded-full bg-white px-5 font-semibold text-rouge transition-transform hover:scale-[1.03] active:scale-[0.98]"
+                className="mt-5 inline-flex h-11 items-center rounded-full bg-white px-5 font-semibold text-rouge appui"
               >
                 Adhérer
               </Link>
