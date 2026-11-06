@@ -12,11 +12,11 @@ export function Adherer() {
   return (
     <Page titre="Adhérer" intro={SITE.adhererIntro}>
       <div className="grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-16">
-        <ul className="flex flex-col gap-8">
+        <ul className="self-start divide-y divide-[var(--rule)] border-t-4 border-[var(--text)] bg-surface px-5 sm:px-8">
           {RAISONS.map(([titre, texte]) => (
-            <li key={titre} className="border-l-4 border-rouge pl-5">
+            <li key={titre} className="py-6">
               <h2 className="font-condensed text-4xl font-[850]">{titre}</h2>
-              <p className="mt-2 max-w-[52ch] text-lg text-muted">{texte}</p>
+              <p className="mt-2 max-w-[52ch] text-lg">{texte}</p>
             </li>
           ))}
         </ul>
