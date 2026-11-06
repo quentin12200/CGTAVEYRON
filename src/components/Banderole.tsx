@@ -29,6 +29,8 @@ export function Banderole({ pub }: { pub: Publication }) {
   const reduit = useReducedMotion()
   const compte = useCompteARebours(pub.dateEvenement)
   const mots = pub.titre.split(' ')
+  const photos = pub.visuels?.filter((v) => v.src) ?? []
+  const photo = photos[0]
 
   return (
     <section aria-label="À la une" className="relative isolate overflow-hidden bg-rouge text-white">
@@ -44,16 +46,19 @@ export function Banderole({ pub }: { pub: Publication }) {
         </svg>
       </motion.div>
 
-      <div className="mx-auto max-w-6xl px-4 pt-10 pb-12 sm:px-6 sm:pt-14 sm:pb-16">
-        <p className="flex items-center gap-2 font-semibold text-white/85">
-          <span className="relative flex size-2.5">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-white/70" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-white" />
-          </span>
-          À la une
-        </p>
+      <div
+        className={`mx-auto max-w-6xl px-4 pt-10 pb-12 sm:px-6 sm:pt-14 sm:pb-16 ${
+          photo ? 'lg:grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center lg:gap-14' : ''
+        }`}
+      >
+        <div>
+        <p className="font-semibold text-white/85">À la une</p>
 
-        <h1 className="mt-4 max-w-5xl font-condensed text-[clamp(2.4rem,10.5vw,8.5rem)] leading-[0.86] font-[900] hyphens-auto sm:hyphens-none">
+        <h1
+          className={`mt-4 max-w-5xl font-condensed text-[clamp(2.4rem,10.5vw,8.5rem)] leading-[0.86] font-[900] hyphens-auto sm:hyphens-none ${
+            photo ? 'lg:text-[clamp(3.5rem,6.2vw,6.5rem)]' : ''
+          }`}
+        >
           {mots.map((m, i) => (
             <span key={i} className="mr-[0.2em] inline-block overflow-hidden pb-[0.06em] align-bottom last:mr-0">
               <motion.span
@@ -107,6 +112,36 @@ export function Banderole({ pub }: { pub: Publication }) {
             </dl>
           )}
         </motion.div>
+        </div>
+
+        {photo && (
+          // La photo de la publication, entière (jamais recadrée), comme un tirage épinglé sur la banderole.
+          <motion.div
+            initial={reduit ? false : { opacity: 0, y: 16, rotate: 0 }}
+            animate={{ opacity: 1, y: 0, rotate: -1.5 }}
+            transition={{ delay: 0.45 + mots.length * 0.06, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-10 lg:mt-0"
+          >
+            <Link
+              to={`/publication/${pub.id}`}
+              className="relative block bg-white p-1.5 shadow-[0_18px_40px_-12px_rgba(0,0,0,.45)] sm:p-2"
+              aria-label={`Voir les ${photos.length > 1 ? `${photos.length} photos` : 'photos'} : ${pub.titre}`}
+            >
+              <img
+                src={photo.src}
+                alt={photo.legende}
+                width={photo.largeur}
+                height={photo.hauteur}
+                className="mx-auto block h-auto max-h-[70vh] w-auto max-w-full"
+              />
+              {photos.length > 1 && (
+                <span className="absolute right-3 bottom-3 rounded-full bg-black/65 px-3 py-1 text-sm font-semibold tabular-nums sm:right-4 sm:bottom-4">
+                  {photos.length} photos
+                </span>
+              )}
+            </Link>
+          </motion.div>
+        )}
       </div>
     </section>
   )

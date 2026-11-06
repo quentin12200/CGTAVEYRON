@@ -71,7 +71,7 @@ export function Accueil() {
             <div
               role="group"
               aria-label="Filtrer par thème"
-              className="mt-5 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:px-0 [&::-webkit-scrollbar]:hidden"
+              className="mt-5 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden"
             >
               {[null, ...THEMES].map((t) => {
                 const actif = filtre === t
@@ -109,7 +109,7 @@ export function Accueil() {
             {visibles.length === 0 && (
               <p className="px-4 py-12 text-muted sm:px-0">
                 Pas encore de publication dans ce thème.{' '}
-                <button type="button" className="font-semibold text-rouge underline" onClick={() => setFiltre(null)}>
+                <button type="button" className="font-semibold text-rouge-texte underline" onClick={() => setFiltre(null)}>
                   Voir tout le fil
                 </button>
               </p>
@@ -126,7 +126,7 @@ export function Accueil() {
             <section aria-labelledby="titre-agenda">
               <div className="flex items-baseline justify-between">
                 <h2 id="titre-agenda" className="font-condensed text-3xl font-[850]">Prochains rendez-vous</h2>
-                <Link to="/agenda" className="font-semibold text-rouge hover:underline">Agenda</Link>
+                <Link to="/agenda" className="font-semibold text-rouge-texte hover:underline">Agenda</Link>
               </div>
               {prochains.length === 0 && (
                 <p className="mt-4 border-y border-rule py-4 text-muted">
@@ -137,7 +137,7 @@ export function Accueil() {
                 {prochains.map((e) => (
                   <li key={e.id} className="flex gap-4 py-4">
                     <div className="w-12 shrink-0 text-center">
-                      <div className="font-condensed text-4xl leading-none font-[850] text-rouge">{numeroJour(e.date)}</div>
+                      <div className="font-condensed text-4xl leading-none font-[850] text-rouge-texte">{numeroJour(e.date)}</div>
                       <div className="text-sm text-muted">{formatMoisCourt(e.date)}</div>
                     </div>
                     <div>
@@ -165,7 +165,7 @@ export function Accueil() {
             <section>
               <h2 className="font-condensed text-3xl font-[850]">{reglages.accueilAideTitre}</h2>
               <p className="mt-2 text-muted">{reglages.accueilAideTexte}</p>
-              <Link to="/contact" className="mt-3 inline-block font-semibold text-rouge hover:underline">
+              <Link to="/contact" className="mt-3 inline-block font-semibold text-rouge-texte hover:underline">
                 Nous trouver et nous écrire
               </Link>
             </section>

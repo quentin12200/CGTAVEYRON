@@ -53,7 +53,7 @@ export function PublicationPage() {
             href={pub.lienFacebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-flex h-12 items-center rounded-full border border-rule px-6 font-semibold text-rouge hover:bg-[var(--rule)]/60"
+            className="mt-8 inline-flex h-12 items-center rounded-full border border-rule px-6 font-semibold text-rouge-texte hover:bg-[var(--rule)]/60"
           >
             {pub.lienFacebookLibelle ?? 'Voir sur Facebook'}
           </a>

@@ -36,10 +36,12 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 
 ## Design
 
-- Couleurs (dans `src/index.css`, `@theme`) : rouge `#D20012` (celui du logo), rouge foncé `#A8000E`, encre `#1F1A24`, papier `#F7F7F5`, ciment `#6F6B73`, ligne `#E4E2E6` ; mode sombre automatique via des variables CSS (`--bg`, `--surface`, `--text`, `--muted`, `--rule`).
+- Couleurs (dans `src/index.css`, `@theme`) : rouge `#D20012` (celui du logo) pour les fonds et boutons, `rouge-texte` pour les liens et textes rouges (`#D20012` en clair, `#FF5A5F` en sombre : le rouge du logo n'atteint pas 4,5:1 sur fond sombre), rouge foncé `#A8000E`, encre `#1F1A24`, papier `#F7F7F5`, ciment `#6F6B73`, ligne `#E4E2E6` ; mode sombre automatique via des variables CSS (`--bg`, `--surface`, `--text`, `--muted`, `--rule`).
 - Typo : Archivo étroit très gras (`font-condensed`) pour les titres, façon banderole ; Atkinson Hyperlegible Next pour le texte (lisibilité pour tous les publics).
-- Mouvement : un seul grand mouvement automatique (la banderole qui se déploie au chargement). Le reste répond aux gestes (menu, galerie, réaction, filtres). `MotionConfig reducedMotion="user"` + règle CSS respectent le réglage « réduire les animations ».
+- Banderole « À la une » : affiche la première photo de la publication épinglée, entière, comme un tirage épinglé (légère inclinaison, cadre blanc), lien vers la page de la publication.
+- Mouvement : un seul grand mouvement automatique (la banderole qui se déploie au chargement, photo comprise). Pas d'apparition des cartes au défilement, pas de pastille qui pulse. Le reste répond aux gestes (menu, galerie, réaction, filtres). `MotionConfig reducedMotion="user"` + règle CSS respectent le réglage « réduire les animations ».
 - Mobile d'abord : les visiteurs arrivent surtout depuis Facebook sur téléphone.
+- Accessibilité (WCAG 2.2 AA) : contrastes vérifiés en clair et en sombre, visionneuse plein écran au clavier (focus placé, piégé, rendu), noms accessibles sur les champs et boutons-icônes. Ne rien afficher « à compléter » au public.
 - Textes de l'interface en français, voix active, phrases courtes, pas de majuscules partout.
 
 ## Conventions

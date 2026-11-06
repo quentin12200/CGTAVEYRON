@@ -176,6 +176,36 @@ function Visionneuse({
     }
   }, [index, visuels.length, changer])
 
+  // Clavier et lecteurs d'écran : le focus entre dans la visionneuse à l'ouverture,
+  // y reste (Tab boucle sur ses boutons) et revient à la photo touchée à la fermeture.
+  const ouverte = index !== null
+  const boite = useRef<HTMLDivElement>(null)
+  const fermer = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (!ouverte) return
+    const avant = document.activeElement as HTMLElement | null
+    fermer.current?.focus()
+    const piege = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !boite.current) return
+      const f = [...boite.current.querySelectorAll<HTMLElement>('button')]
+      if (!f.length) return
+      const premier = f[0]
+      const dernier = f[f.length - 1]
+      if (e.shiftKey && document.activeElement === premier) {
+        e.preventDefault()
+        dernier.focus()
+      } else if (!e.shiftKey && document.activeElement === dernier) {
+        e.preventDefault()
+        premier.focus()
+      }
+    }
+    window.addEventListener('keydown', piege)
+    return () => {
+      window.removeEventListener('keydown', piege)
+      avant?.focus()
+    }
+  }, [ouverte])
+
   const v = index === null ? null : visuels[index]
 
   return (
@@ -189,17 +219,19 @@ function Visionneuse({
           role="dialog"
           aria-modal="true"
           aria-label="Photo en plein écran"
-          onClick={() => changer(null)}
+          ref={boite}
+          // Toucher le fond noir ferme ; toucher la photo ne ferme pas.
+          onClick={(e) => e.target === e.currentTarget && changer(null)}
         >
           <div className="flex items-center justify-between p-4 text-white">
             <span className="text-sm text-white/70 tabular-nums">{plusieurs ? `${index + 1} / ${visuels.length}` : ''}</span>
-            <button type="button" className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
+            <button ref={fermer} type="button" onClick={() => changer(null)} className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
               <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             </button>
           </div>
-          <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16" onClick={(e) => e.stopPropagation()}>
+          <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={index}

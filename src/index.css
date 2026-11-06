@@ -6,6 +6,8 @@
 @theme {
   --color-rouge: #d20012;
   --color-rouge-fonce: #a8000e;
+  /* Rouge des liens et textes rouges : celui du logo, éclairci en mode sombre pour rester lisible (WCAG AA). */
+  --color-rouge-texte: #d20012;
   --color-encre: #1f1a24;
   --color-papier: #f7f7f5;
   --color-ciment: #6f6b73;
@@ -34,6 +36,7 @@
       --text: #f2eff4;
       --muted: #a9a3ad;
       --rule: #342d39;
+      --color-rouge-texte: #ff5a5f; /* 5,4:1 sur les cartes sombres */
       color-scheme: dark;
     }
   }
@@ -45,6 +48,7 @@
     --text: var(--color-encre);
     --muted: #57525b;
     --rule: #d6d3d9;
+    --color-rouge-texte: #d20012;
     color-scheme: only light; /* « only » : le navigateur ne repeint pas la page en sombre */
   }
 
