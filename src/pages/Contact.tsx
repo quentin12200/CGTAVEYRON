@@ -44,9 +44,28 @@ export function Contact() {
                 {ul.adresse || ul.telephone || ul.email || ul.permanences ? (
                   <div className="mt-1 text-muted">
                     {ul.adresse && <p className="whitespace-pre-line">{ul.adresse}</p>}
-                    {ul.telephone && <p><a href={`tel:${ul.telephone}`} className="hover:text-rouge-texte">{ul.telephone}</a></p>}
+                    {ul.telephone && (
+                      // Plusieurs numéros possibles, séparés par « / » : un lien d'appel chacun.
+                      <p className="flex flex-wrap gap-x-3">
+                        {ul.telephone.split('/').map((t) => t.trim()).filter(Boolean).map((t) => (
+                          <a key={t} href={`tel:${t.replace(/[^\d+]/g, '')}`} className="hover:text-rouge-texte">
+                            {t}
+                          </a>
+                        ))}
+                      </p>
+                    )}
                     {ul.email && <p><a href={`mailto:${ul.email}`} className="hover:text-rouge-texte">{ul.email}</a></p>}
                     {ul.permanences && <p className="whitespace-pre-line">{ul.permanences}</p>}
+                    {ul.adresse && (
+                      <a
+                        href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(ul.adresse.replace(/\n/g, ', '))}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-block font-semibold text-rouge-texte hover:underline"
+                      >
+                        Voir sur la carte
+                      </a>
+                    )}
                   </div>
                 ) : null}
               </li>

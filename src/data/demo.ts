@@ -61,7 +61,47 @@ export const evenements: Evenement[] = [
 ]
 
 // Coordonnées à compléter : rien n'est inventé ici.
+// Coordonnées fournies par l'UD (novembre 2026). Modifiables depuis /admin → Contacts.
 export const unionsLocales: UnionLocale[] = [
   { id: 'ud', nom: 'Union départementale CGT de l’Aveyron' },
-  { id: 'villefranche', nom: 'Union locale de Villefranche-de-Rouergue' },
+  {
+    id: 'villefranche',
+    nom: 'Union locale de Villefranche-de-Rouergue',
+    adresse: '26 rue Durand de Montlauzeur\n12200 Villefranche-de-Rouergue',
+    telephone: '05 65 45 48 51',
+    email: 'ulcgtviro@orange.fr',
+  },
+  {
+    id: 'onet-rodez',
+    nom: 'Union locale d’Onet-le-Château / Rodez',
+    adresse: '19 route de Sévérac\n12850 Onet-le-Château',
+    telephone: '05 65 68 22 30 / 09 65 39 70 87',
+    email: 'lacgt.onetlechateau@orange.fr',
+  },
+  {
+    id: 'capdenac',
+    nom: 'Union locale de Capdenac-Gare',
+    adresse: '2 rue Victor Hugo\n12700 Capdenac-Gare',
+    telephone: '05 65 64 85 87',
+    email: 'cgt.capdenac@orange.fr',
+  },
+  {
+    id: 'decazeville',
+    nom: 'Union locale de Decazeville',
+    adresse: 'Esplanade Jean Jaurès\n12300 Decazeville',
+    telephone: '05 65 43 13 72',
+    email: 'cgt.dkz@lacgt-decazeville.org',
+  },
+  {
+    id: 'millau',
+    nom: 'Union locale de Millau',
+    adresse: '48 quai Sully Chaliès\n12100 Millau',
+    telephone: '05 65 60 03 18',
+    email: 'cgt.ulmillau12@orange.fr',
+  },
+  {
+    id: 'saint-affrique',
+    nom: 'Union locale de Saint-Affrique',
+    adresse: '1 rue Henri Michel, bâtiment Aubrac\n12400 Saint-Affrique',
+  },
 ]
