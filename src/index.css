@@ -24,7 +24,7 @@
     --text: var(--color-encre);
     --muted: var(--color-ciment);
     --rule: var(--color-ligne);
-    color-scheme: light;
+    color-scheme: only light; /* « only » : le navigateur ne repeint pas la page en sombre */
   }
 
   @media (prefers-color-scheme: dark) {
@@ -45,7 +45,7 @@
     --text: var(--color-encre);
     --muted: #57525b;
     --rule: #d6d3d9;
-    color-scheme: light;
+    color-scheme: only light; /* « only » : le navigateur ne repeint pas la page en sombre */
   }
 
   html {
