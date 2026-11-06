@@ -109,6 +109,7 @@ export function Admin() {
     meta.name = 'robots'
     meta.content = 'noindex'
     document.head.appendChild(meta)
+    document.documentElement.classList.add('clair')
     let arret: (() => void) | undefined
     void services().then(async (sv) => {
       setS(sv)
@@ -118,6 +119,7 @@ export function Admin() {
     })
     return () => {
       meta.remove()
+      document.documentElement.classList.remove('clair')
       arret?.()
     }
   }, [])
@@ -234,7 +236,7 @@ function GestionPublications({ s }: { s: Services }) {
         {publications.map((p) => {
           const photo = p.visuels?.find((v) => v.src)?.src
           return (
-            <li key={p.id} className={`flex gap-4 py-4 ${p.masque ? 'opacity-55' : ''}`}>
+            <li key={p.id} className={`flex gap-4 py-4 ${p.masque ? 'opacity-70' : ''}`}>
               <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-[var(--rule)]">
                 {photo && <img src={photo} alt="" className="size-full object-contain" loading="lazy" />}
               </div>
@@ -498,7 +500,7 @@ function Onglets({ s }: { s: Services }) {
             aria-selected={onglet === o}
             onClick={() => setOnglet(o)}
             className={`shrink-0 rounded-full border px-4 py-2 font-semibold transition-colors ${
-              onglet === o ? 'border-transparent bg-encre text-white dark:bg-rouge' : 'border-rule text-muted hover:text-[var(--text)]'
+              onglet === o ? 'border-transparent bg-encre text-white' : 'border-rule text-muted hover:text-[var(--text)]'
             }`}
           >
             {o}
@@ -640,7 +642,7 @@ function GestionListe<T extends { id: string; masque?: boolean }>({
       {erreur && <p className="mt-4 font-semibold text-rouge" role="alert">{erreur}</p>}
       <ul className="mt-8 divide-y divide-[var(--rule)] border-y border-rule">
         {elements.map((x) => (
-          <li key={x.id} className={`py-4 ${x.masque ? 'opacity-55' : ''}`}>
+          <li key={x.id} className={`py-4 ${x.masque ? 'opacity-70' : ''}`}>
             <p className="font-semibold leading-snug">{titre(x)}</p>
             <p className="mt-0.5 text-sm text-muted">
               {resume(x)}
