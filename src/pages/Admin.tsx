@@ -417,7 +417,7 @@ function Editeur({
         <button type="button" onClick={() => fichiers.current?.click()} disabled={!!envoi} className={`${boutonLigne} mt-3`}>
           {envoi || 'Ajouter des photos'}
         </button>
-        <p className="mt-2 text-sm text-muted">Vous pouvez en choisir plusieurs d’un coup. Elles s’affichent entières sur le site, jamais recadrées. La première s’affiche en premier dans le fil. Elles sont réduites et leurs données de position retirées avant l’envoi.</p>
+        <p className="mt-2 text-sm text-muted">Vous pouvez en choisir plusieurs d’un coup ; la première ouvre la galerie dans le fil. Avant l’envoi, chaque photo est réduite et ses données de position sont retirées. Sur le site, elle s’affiche entière, sans recadrage.</p>
       </fieldset>
 
       <div className="grid gap-6 sm:grid-cols-2">
