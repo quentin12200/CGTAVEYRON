@@ -116,7 +116,8 @@ export function Admin() {
       setS(sv)
       if (!sv) return
       const { onAuthStateChanged } = await import('firebase/auth')
-      arret = onAuthStateChanged(sv.auth, setUtilisateur)
+      // Une identité anonyme (bouton « Je soutiens ») n'est pas une connexion administrateur.
+      arret = onAuthStateChanged(sv.auth, (u) => setUtilisateur(u && !u.isAnonymous ? u : null))
     })
     return () => {
       meta.remove()
