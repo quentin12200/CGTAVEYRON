@@ -16,6 +16,38 @@ const Admin = lazy(() =>
   import("./pages/Admin").then((m) => ({ default: m.Admin })),
 );
 
+/**
+ * Certaines extensions de « mode sombre » repeignent en noir le fond des grands blocs (page, en-tête)
+ * avec des règles « !important », sans changer la couleur du texte : titres noirs sur fond noir.
+ * Une couleur posée directement sur l'élément avec « important » passe avant leurs règles.
+ */
+function ProtegerLeFond() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const poser = () => {
+      const blocs = [
+        document.documentElement,
+        document.body,
+        document.getElementById("root"),
+        document.getElementById("fond"),
+        document.querySelector("header"),
+        document.querySelector("main"),
+        ...document.querySelectorAll<HTMLElement>("main > div"),
+      ];
+      for (const el of blocs) {
+        el?.style.setProperty("background-color", "var(--bg)", "important");
+        el?.style.setProperty("color", "var(--text)", "important");
+      }
+    };
+    poser();
+    // Si une extension ajoute ses styles après le chargement, on repose les couleurs.
+    const obs = new MutationObserver(poser);
+    obs.observe(document.head, { childList: true });
+    return () => obs.disconnect();
+  }, [pathname]);
+  return null;
+}
+
 function RemonterEnHaut() {
   const { pathname } = useLocation();
   // Accolades obligatoires : dans les navigateurs récents, scrollTo renvoie une promesse,
@@ -32,8 +64,12 @@ export default function App() {
       <BrowserRouter>
         {/* Fond et texte posés sur le site lui-même, pas seulement sur <body> : certains navigateurs ou extensions
             de « mode sombre » repeignent le fond de la page en noir sans changer le texte, qui devient illisible. */}
-        <div className="isolate flex min-h-dvh flex-col bg-[var(--bg)] text-[var(--text)]">
+        <div
+          id="fond"
+          className="isolate flex min-h-dvh flex-col bg-[var(--bg)] text-[var(--text)]"
+        >
           <RemonterEnHaut />
+          <ProtegerLeFond />
           <a
             href="#contenu"
             className="sr-only z-50 rounded-full bg-rouge px-4 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"

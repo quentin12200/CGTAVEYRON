@@ -104,7 +104,7 @@ export function Accueil() {
                       setNombre(PAQUET)
                     }}
                     aria-pressed={actif}
-                    className={`relative shrink-0 rounded-full border px-4 py-2 font-semibold transition-colors ${
+                    className={`relative isolate shrink-0 rounded-full border px-4 py-2 font-semibold transition-colors ${
                       actif ? 'border-transparent text-white' : 'border-rule text-muted hover:text-[var(--text)]'
                     }`}
                   >
