@@ -5,6 +5,7 @@ import type { Evenement } from '../data/types'
 import { Page } from '../components/Page'
 import { useReglages } from '../data/reglages'
 import { formatJourSemaine, formatMois, numeroJour } from '../lib/format'
+import { EASE_SORTIE } from '../lib/mouvement'
 
 /** Date du jour au format AAAA-MM-JJ, en heure locale. */
 const aujourdhui = () => new Date().toLocaleDateString('sv-SE')
@@ -94,7 +95,7 @@ export function Agenda() {
               href={SITE.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex h-12 items-center rounded-full bg-rouge px-6 font-semibold text-white transition-colors hover:bg-rouge-fonce"
+              className="mt-5 inline-flex h-12 items-center rounded-full bg-rouge px-6 font-semibold text-white appui hover:bg-rouge-fonce"
             >
               Suivre l’UD sur Facebook
             </a>
@@ -121,9 +122,9 @@ export function Agenda() {
               <motion.div
                 id="liste-passes"
                 initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                animate={{ height: 'auto', opacity: 1, transition: { duration: 0.28, ease: EASE_SORTIE } }}
+                // Replier va plus vite que déplier : le site répond, l'utilisateur n'attend pas.
+                exit={{ height: 0, opacity: 0, transition: { duration: 0.2, ease: EASE_SORTIE } }}
                 className="overflow-hidden"
               >
                 <div className="pt-6">

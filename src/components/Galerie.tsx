@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import type { Visuel as V } from '../data/types'
 import { Visuel } from './Visuel'
+import { EASE_SORTIE, INSTANTANE } from '../lib/mouvement'
+
+// Sortie de la visionneuse ou d'une photo : rapide au toucher, immédiate au clavier.
+const SORTIE = {
+  cache: (clavier: boolean) => ({ opacity: 0, transition: clavier ? INSTANTANE : { duration: 0.12, ease: EASE_SORTIE } }),
+}
 
 /** Hauteur / largeur d'une photo (null si inconnue). */
 const proportion = (v: V) => (v.largeur && v.hauteur ? v.hauteur / v.largeur : null)
@@ -77,7 +83,7 @@ export function Galerie({ visuels, id }: { visuels: V[]; id: string }) {
                   type="button"
                   onClick={() => aller(i)}
                   aria-label={`Photo ${i + 1} sur ${visuels.length}`}
-                  className={`pointer-events-auto h-1.5 rounded-full bg-white shadow transition-all duration-300 ${
+                  className={`pointer-events-auto h-1.5 rounded-full bg-white shadow transition-[width,opacity] duration-200 ease-sortie ${
                     i === actif ? 'w-6 opacity-100' : 'w-1.5 opacity-60'
                   }`}
                 />
@@ -102,7 +108,7 @@ function Fleche({ sens, cache, onClick }: { sens: -1 | 1; cache: boolean; onClic
       type="button"
       onClick={onClick}
       aria-label={sens < 0 ? 'Photo précédente' : 'Photo suivante'}
-      className={`absolute top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-encre opacity-0 shadow transition-opacity group-hover:opacity-100 focus-visible:opacity-100 sm:grid ${
+      className={`absolute top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-encre opacity-0 shadow appui group-hover:opacity-100 focus-visible:opacity-100 sm:grid ${
         sens < 0 ? 'left-3' : 'right-3'
       }`}
     >
@@ -158,15 +164,21 @@ function Visionneuse({
   changer: (i: number | null) => void
 }) {
   const plusieurs = visuels.length > 1
-  const suivante = () => index !== null && changer(Math.min(index + 1, visuels.length - 1))
-  const precedente = () => index !== null && changer(Math.max(index - 1, 0))
+  // Une action au clavier (Échap, flèches) se répète vite : elle change l'écran sans animation.
+  const [clavier, setClavier] = useState(false)
+  const aller = (i: number | null, auClavier = false) => {
+    setClavier(auClavier)
+    changer(i)
+  }
+  const suivante = () => index !== null && aller(Math.min(index + 1, visuels.length - 1))
+  const precedente = () => index !== null && aller(Math.max(index - 1, 0))
 
   useEffect(() => {
     if (index === null) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') changer(null)
-      if (e.key === 'ArrowRight') changer(Math.min(index + 1, visuels.length - 1))
-      if (e.key === 'ArrowLeft') changer(Math.max(index - 1, 0))
+      if (e.key === 'Escape') aller(null, true)
+      if (e.key === 'ArrowRight') aller(Math.min(index + 1, visuels.length - 1), true)
+      if (e.key === 'ArrowLeft') aller(Math.max(index - 1, 0), true)
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -174,6 +186,7 @@ function Visionneuse({
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- aller ne dépend que de changer
   }, [index, visuels.length, changer])
 
   // Clavier et lecteurs d'écran : le focus entre dans la visionneuse à l'ouverture,
@@ -209,43 +222,48 @@ function Visionneuse({
   const v = index === null ? null : visuels[index]
 
   return (
-    <AnimatePresence>
+    <AnimatePresence custom={clavier}>
       {v && index !== null && (
         <motion.div
           className="fixed inset-0 z-50 flex flex-col bg-black"
+          variants={SORTIE}
+          custom={clavier}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: 0.2, ease: EASE_SORTIE } }}
+          exit="cache"
           role="dialog"
           aria-modal="true"
           aria-label="Photo en plein écran"
           ref={boite}
           // Toucher le fond noir ferme ; toucher la photo ne ferme pas.
-          onClick={(e) => e.target === e.currentTarget && changer(null)}
+          onClick={(e) => e.target === e.currentTarget && aller(null)}
         >
           <div className="flex items-center justify-between p-4 text-white">
             <span className="text-sm text-white/70 tabular-nums">{plusieurs ? `${index + 1} / ${visuels.length}` : ''}</span>
-            <button ref={fermer} type="button" onClick={() => changer(null)} className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
+            <button ref={fermer} type="button" onClick={() => aller(null)} className="grid size-11 place-items-center rounded-full" aria-label="Fermer">
               <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             </button>
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16">
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="wait" initial={false} custom={clavier}>
               <motion.div
                 key={index}
                 className="flex size-full items-center justify-center"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
+                variants={SORTIE}
+                custom={clavier}
+                // Sortie 120 ms + entrée 150 ms : on reste sous 300 ms ; rien du tout au clavier.
+                initial={clavier ? false : { opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1, transition: { duration: 0.15, ease: EASE_SORTIE } }}
+                exit="cache"
                 drag={plusieurs ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.6}
+                // Un petit coup de doigt rapide suffit : on regarde la vitesse, pas seulement la distance.
                 onDragEnd={(_, info) => {
-                  if (info.offset.x < -60) suivante()
-                  if (info.offset.x > 60) precedente()
+                  if (info.offset.x < -60 || info.velocity.x < -400) suivante()
+                  else if (info.offset.x > 60 || info.velocity.x > 400) precedente()
                 }}
               >
                 {v.src ? (
@@ -258,12 +276,12 @@ function Visionneuse({
               </motion.div>
             </AnimatePresence>
             {plusieurs && index > 0 && (
-              <button type="button" onClick={precedente} aria-label="Photo précédente" className="absolute left-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:grid">
+              <button type="button" onClick={precedente} aria-label="Photo précédente" className="absolute left-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white appui hover:bg-white/25 sm:grid">
                 <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
               </button>
             )}
             {plusieurs && index < visuels.length - 1 && (
-              <button type="button" onClick={suivante} aria-label="Photo suivante" className="absolute right-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25 sm:grid">
+              <button type="button" onClick={suivante} aria-label="Photo suivante" className="absolute right-3 hidden size-12 place-items-center rounded-full bg-white/15 text-white appui hover:bg-white/25 sm:grid">
                 <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
               </button>
             )}

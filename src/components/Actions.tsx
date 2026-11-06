@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { EASE_SORTIE } from '../lib/mouvement'
 
 const cle = (id: string) => `reaction:${id}`
 
@@ -36,15 +37,16 @@ export function Reaction({ id }: { id: string }) {
       type="button"
       onClick={basculer}
       aria-pressed={fait}
-      className={`relative flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold transition-colors ${
+      className={`relative flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold appui ${
         fait ? 'bg-rouge text-white' : 'bg-[var(--rule)]/60 hover:bg-[var(--rule)]'
       }`}
     >
       <motion.span
         key={rafale}
-        initial={rafale ? { scale: 0.4, rotate: -18 } : false}
+        // Petit moment de joie, rare : le poing rebondit un peu, sans partir de rien.
+        initial={rafale ? { scale: 0.6, rotate: -14 } : false}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 520, damping: 14 }}
+        transition={{ type: 'spring', duration: 0.4, bounce: 0.45 }}
         aria-hidden="true"
         className="text-lg leading-none"
       >
@@ -59,7 +61,7 @@ export function Reaction({ id }: { id: string }) {
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 0, y: -28 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.6, ease: EASE_SORTIE }}
             aria-hidden="true"
           >
             +1
@@ -94,12 +96,23 @@ export function Partager({ titre, chemin }: { titre: string; chemin: string }) {
     <button
       type="button"
       onClick={partager}
-      className="flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold transition-colors hover:bg-[var(--rule)]/60"
+      className="flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold appui hover:bg-[var(--rule)]/60"
     >
       <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6" />
       </svg>
-      <span aria-live="polite" className={copie ? '' : 'max-[400px]:sr-only'}>{copie ? 'Lien copié' : 'Partager'}</span>
+      <span aria-live="polite" className={copie ? '' : 'max-[400px]:sr-only'}>
+        {/* Un léger flou pendant le fondu fond les deux libellés en un seul changement. */}
+        <motion.span
+          key={copie ? 'copie' : 'partager'}
+          className="inline-block"
+          initial={{ opacity: 0, filter: 'blur(2px)' }}
+          animate={{ opacity: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 0.15, ease: EASE_SORTIE }}
+        >
+          {copie ? 'Lien copié' : 'Partager'}
+        </motion.span>
+      </span>
     </button>
   )
 }

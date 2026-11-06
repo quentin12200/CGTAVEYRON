@@ -26,11 +26,11 @@ export function Adherer() {
           <a
             href={SITE.adhesionUrl}
             rel="noopener"
-            className="mt-6 flex h-12 items-center justify-center rounded-full bg-white font-semibold text-rouge transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            className="mt-6 flex h-12 items-center justify-center rounded-full bg-white font-semibold text-rouge appui"
           >
             Adhérer en ligne
           </a>
-          <Link to="/contact" className="mt-3 flex h-12 items-center justify-center rounded-full border border-white/50 font-semibold hover:bg-white/10">
+          <Link to="/contact" className="mt-3 flex h-12 items-center justify-center rounded-full border border-white/50 font-semibold appui hover:bg-white/10">
             Trouver mon union locale
           </Link>
         </div>

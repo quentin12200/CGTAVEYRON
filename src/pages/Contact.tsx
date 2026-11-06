@@ -90,7 +90,7 @@ export function Contact() {
                 </button>
               </motion.div>
             ) : (
-              <motion.form key="form" onSubmit={envoyer} className="mt-4 flex flex-col gap-5 border-t-4 border-[var(--text)] bg-surface p-5 sm:p-7" exit={{ opacity: 0 }}>
+              <motion.form key="form" onSubmit={envoyer} className="mt-4 flex flex-col gap-5 border-t-4 border-[var(--text)] bg-surface p-5 sm:p-7" exit={{ opacity: 0, transition: { duration: 0.15 } }}>
                 <label className="font-semibold">
                   Nom
                   <input required name="nom" autoComplete="name" className={champ} />
@@ -112,7 +112,7 @@ export function Contact() {
                 </p>
                 <button
                   type="submit"
-                  className="h-12 self-start rounded-full bg-rouge px-7 font-semibold text-white transition-colors hover:bg-rouge-fonce"
+                  className="h-12 self-start rounded-full bg-rouge px-7 font-semibold text-white appui hover:bg-rouge-fonce"
                 >
                   Préparer l’e-mail
                 </button>

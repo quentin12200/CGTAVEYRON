@@ -20,7 +20,7 @@ export function Footer() {
           </p>
           <Link
             to="/adherer"
-            className="mt-6 inline-flex h-11 items-center rounded-full bg-rouge px-5 font-semibold text-white transition-colors hover:bg-rouge-fonce"
+            className="mt-6 inline-flex h-11 items-center rounded-full bg-rouge px-5 font-semibold text-white appui hover:bg-rouge-fonce"
           >
             Adhérer
           </Link>

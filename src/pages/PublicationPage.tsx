@@ -54,7 +54,7 @@ export function PublicationPage() {
               href={pub.lienFacebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-auto flex h-10 items-center gap-1 rounded-full px-3 font-semibold whitespace-nowrap text-rouge-texte hover:bg-[var(--rule)]/60"
+              className="ml-auto flex h-10 items-center gap-1 rounded-full px-3 font-semibold whitespace-nowrap text-rouge-texte appui hover:bg-[var(--rule)]/60"
             >
               {pub.lienFacebookLibelle ?? 'Voir sur Facebook'}
               <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

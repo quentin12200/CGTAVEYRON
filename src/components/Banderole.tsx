@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Publication } from '../data/types'
 import { formatJourMois, formatJourSemaine, lireDate } from '../lib/format'
+import { EASE_DEPLACEMENT, EASE_SORTIE } from '../lib/mouvement'
+
+// L'entrée de la banderole ne se joue qu'à la première arrivée sur le site :
+// en revenant à l'accueil, on veut le contenu tout de suite, pas le spectacle une deuxième fois.
+let dejaJouee = false
 
 function useCompteARebours(cible?: string) {
   const [maintenant, setMaintenant] = useState(() => Date.now())
@@ -27,6 +32,10 @@ function useCompteARebours(cible?: string) {
  */
 export function Banderole({ pub }: { pub: Publication }) {
   const reduit = useReducedMotion()
+  const [jouer] = useState(() => !reduit && !dejaJouee)
+  useEffect(() => {
+    dejaJouee = true
+  }, [])
   const compte = useCompteARebours(pub.dateEvenement)
   const mots = pub.titre.split(' ')
   const photos = pub.visuels?.filter((v) => v.src) ?? []
@@ -37,9 +46,9 @@ export function Banderole({ pub }: { pub: Publication }) {
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 -z-10"
-        initial={reduit ? false : { clipPath: 'inset(0 100% 0 0)' }}
+        initial={jouer ? { clipPath: 'inset(0 100% 0 0)' } : false}
         animate={{ clipPath: 'inset(0 0% 0 0)' }}
-        transition={{ duration: 0.9, ease: [0.7, 0, 0.2, 1] }}
+        transition={{ duration: 0.7, ease: EASE_DEPLACEMENT }}
       >
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="size-full">
           <path d="M-5 108 L105 -8" stroke="rgba(0,0,0,.12)" strokeWidth="22" />
@@ -63,9 +72,10 @@ export function Banderole({ pub }: { pub: Publication }) {
             <span key={i} className="mr-[0.2em] inline-block overflow-hidden pt-[0.12em] pb-[0.04em] align-bottom last:mr-0">
               <motion.span
                 className="inline-block"
-                initial={reduit ? false : { y: '105%' }}
+                initial={jouer ? { y: '105%' } : false}
                 animate={{ y: 0 }}
-                transition={{ delay: 0.35 + i * 0.06, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                // 40 ms entre les mots, plafonné : un long titre ne fait pas attendre la suite.
+                transition={{ delay: 0.15 + Math.min(i, 8) * 0.04, duration: 0.5, ease: EASE_SORTIE }}
               >
                 {m}
               </motion.span>
@@ -74,9 +84,9 @@ export function Banderole({ pub }: { pub: Publication }) {
         </h1>
 
         <motion.div
-          initial={reduit ? false : { opacity: 0, y: 12 }}
+          initial={jouer ? { opacity: 0, y: 12 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 + mots.length * 0.06 + 0.1, duration: 0.5 }}
+          transition={{ delay: 0.3, duration: 0.4, ease: EASE_SORTIE }}
           className="mt-8 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between"
         >
           <div className="text-lg">
@@ -87,11 +97,11 @@ export function Banderole({ pub }: { pub: Publication }) {
               </p>
             )}
             {pub.lienFacebook ? (
-              <a href={pub.lienFacebook} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex h-12 items-center rounded-full bg-white px-6 font-semibold text-rouge transition-transform hover:scale-[1.03] active:scale-[0.98]">
+              <a href={pub.lienFacebook} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex h-12 items-center rounded-full bg-white px-6 font-semibold text-rouge appui">
                 Voir sur Facebook
               </a>
             ) : (
-              <Link to={`/publication/${pub.id}`} className="mt-4 inline-flex h-12 items-center rounded-full bg-white px-6 font-semibold text-rouge transition-transform hover:scale-[1.03] active:scale-[0.98]">
+              <Link to={`/publication/${pub.id}`} className="mt-4 inline-flex h-12 items-center rounded-full bg-white px-6 font-semibold text-rouge appui">
                 Lire la suite
               </Link>
             )}
@@ -117,9 +127,9 @@ export function Banderole({ pub }: { pub: Publication }) {
         {photo && (
           // La photo de la publication, entière (jamais recadrée), comme un tirage épinglé sur la banderole.
           <motion.div
-            initial={reduit ? false : { opacity: 0, y: 16, rotate: 0 }}
+            initial={jouer ? { opacity: 0, y: 16, rotate: 0 } : false}
             animate={{ opacity: 1, y: 0, rotate: -1.5 }}
-            transition={{ delay: 0.45 + mots.length * 0.06, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.25, duration: 0.5, ease: EASE_SORTIE }}
             className="mt-10 lg:mt-0"
           >
             <Link
