@@ -20,7 +20,7 @@ export function Adherer() {
             </li>
           ))}
         </ul>
-        <div className="self-start rounded-2xl bg-rouge p-7 text-white">
+        <div className="self-start bg-rouge p-7 text-white">
           <h2 className="font-condensed text-5xl leading-[0.9] font-[900]">{SITE.adhererEncartTitre}</h2>
           <p className="mt-4 text-white/85">{SITE.adhererEncartTexte}</p>
           <a

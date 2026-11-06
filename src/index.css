@@ -8,10 +8,14 @@
   --color-rouge-fonce: #a8000e;
   /* Rouge des liens et textes rouges : celui du logo, éclairci en mode sombre pour rester lisible (WCAG AA). */
   --color-rouge-texte: #d20012;
+  /* Jaune du bandeau « AVEYRON » du logo : le temps (dates, rendez-vous, « À la une »). Toujours en fond, texte encre. */
+  --color-jaune: #ffd400;
   --color-encre: #1f1a24;
   --color-papier: #f7f7f5;
-  --color-ciment: #6f6b73;
-  --color-ligne: #e4e2e6;
+  /* Fond de page, entre les publications (blanc « tract » sur gris « affiche »). */
+  --color-affiche: #ecebe8;
+  --color-ciment: #5f5a63;
+  --color-ligne: #d9d7dc;
   --color-nuit: #17131a;
   --color-nuit-2: #221d26;
 
@@ -21,7 +25,7 @@
 
 @layer base {
   :root {
-    --bg: var(--color-papier);
+    --bg: var(--color-affiche);
     --surface: #ffffff;
     --text: var(--color-encre);
     --muted: var(--color-ciment);
@@ -60,7 +64,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-sans);
-    font-size: 1.0625rem;
+    font-size: 1.125rem;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }

@@ -124,7 +124,7 @@ export function PhotosEnPile({ visuels }: { visuels: V[] }) {
             key={v.src}
             type="button"
             onClick={() => setPlein(i)}
-            className="block overflow-hidden bg-[var(--rule)] sm:rounded-2xl"
+            className="block overflow-hidden bg-[var(--rule)]"
             aria-label={`Agrandir la photo ${i + 1} : ${v.legende}`}
           >
             <img
@@ -137,7 +137,7 @@ export function PhotosEnPile({ visuels }: { visuels: V[] }) {
             />
           </button>
         ) : (
-          <div key={i} className="aspect-[4/3] overflow-hidden sm:rounded-2xl">
+          <div key={i} className="aspect-[4/3] overflow-hidden">
             <Visuel visuel={v} />
           </div>
         ),
@@ -251,7 +251,7 @@ function Visionneuse({
                 {v.src ? (
                   <img src={v.src} alt={v.legende} draggable={false} className="max-h-full max-w-full select-none object-contain" />
                 ) : (
-                  <div className="aspect-[4/3] w-full max-w-4xl overflow-hidden rounded-xl">
+                  <div className="aspect-[4/3] w-full max-w-4xl overflow-hidden">
                     <Visuel visuel={v} />
                   </div>
                 )}

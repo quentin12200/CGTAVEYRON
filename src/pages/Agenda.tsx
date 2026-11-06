@@ -21,11 +21,13 @@ function parMois(liste: Evenement[]) {
 function LigneEvenement({ e, passe }: { e: Evenement; passe: boolean }) {
   return (
     <li className="grid grid-cols-[4.5rem_1fr] gap-4 py-5 sm:grid-cols-[6rem_1fr_auto] sm:items-start">
-      <div>
-        <div className={`font-condensed text-6xl leading-[0.85] font-[900] ${passe ? 'text-muted' : 'text-rouge-texte'}`}>
-          {numeroJour(e.date)}
-        </div>
-        <div className="mt-1 text-sm text-muted first-letter:uppercase">{formatJourSemaine(e.date)}</div>
+      <div
+        className={`flex aspect-square flex-col items-center justify-center ${
+          passe ? 'bg-[var(--rule)] text-[var(--muted)]' : 'bg-jaune text-encre'
+        }`}
+      >
+        <div className="font-condensed text-5xl leading-[0.85] font-[900] sm:text-6xl">{numeroJour(e.date)}</div>
+        <div className="mt-1 text-xs font-semibold first-letter:uppercase sm:text-sm">{formatJourSemaine(e.date)}</div>
       </div>
       <div>
         <p className="text-xl font-semibold leading-snug">{e.titre}</p>
@@ -83,7 +85,7 @@ export function Agenda() {
             <ListeParMois liste={aVenir} passe={false} />
           </div>
         ) : (
-          <div className="mt-4 rounded-2xl bg-surface p-6 sm:p-8">
+          <div className="mt-4 border-t-4 border-[var(--text)] bg-surface p-6 sm:p-8">
             <p className="text-xl font-semibold">Pas de rendez-vous annoncé pour l’instant.</p>
             <p className="mt-2 max-w-[56ch] text-muted">
               Les prochaines dates seront publiées ici dès qu’elles seront fixées. En attendant, suivez l’actualité de l’UD.

@@ -5,7 +5,7 @@ import { Page } from '../components/Page'
 import { useReglages } from '../data/reglages'
 
 const champ =
-  'mt-1.5 w-full rounded-xl border border-rule bg-surface px-4 py-3 text-base outline-none transition-[border-color,box-shadow] focus:border-rouge focus:ring-4 focus:ring-rouge/15'
+  'mt-1.5 w-full rounded-sm border-2 border-rule bg-surface px-4 py-3 text-base outline-none transition-[border-color,box-shadow] focus:border-rouge focus:ring-4 focus:ring-rouge/15'
 
 export function Contact() {
   const SITE = useReglages()
@@ -51,7 +51,7 @@ export function Contact() {
               </li>
             ))}
           </ul>
-          <div className="mt-6 overflow-hidden rounded-2xl border border-rule">
+          <div className="mt-6 overflow-hidden border-2 border-rule">
             <iframe
               title="Carte de l’Aveyron"
               className="aspect-[4/3] w-full grayscale-[35%]"
@@ -75,7 +75,7 @@ export function Contact() {
                 key="ok"
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="mt-4 rounded-2xl bg-surface p-7"
+                className="mt-4 border-t-4 border-[var(--text)] bg-surface p-7"
                 role="status"
               >
                 <p className="font-condensed text-4xl font-[850] text-rouge-texte">Message prêt</p>
