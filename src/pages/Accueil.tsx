@@ -8,7 +8,7 @@ import { usePublications } from '../data/publications'
 import { THEMES, type Theme } from '../data/types'
 import { Banderole } from '../components/Banderole'
 import { CartePublication } from '../components/CartePublication'
-import { formatMoisCourt, numeroJour } from '../lib/format'
+import { formatJourMois, formatMoisCourt, numeroJour } from '../lib/format'
 import { SITE } from '../config'
 
 const PAQUET = 10
@@ -56,6 +56,26 @@ export function Accueil() {
     <main id="contenu">
       {epinglee && <Banderole pub={epinglee} />}
 
+      {prochains[0] && (
+        <Link
+          to="/agenda"
+          className="block bg-jaune text-encre lg:hidden"
+          aria-label={`Prochain rendez-vous : ${prochains[0].titre}, ${formatJourMois(prochains[0].date)}. Voir l’agenda`}
+        >
+          <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4 sm:px-6">
+            <div className="flex size-16 shrink-0 flex-col items-center justify-center bg-encre text-jaune">
+              <span className="font-condensed text-4xl leading-none font-[900]">{numeroJour(prochains[0].date)}</span>
+              <span className="text-xs font-bold">{formatMoisCourt(prochains[0].date)}</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold">Prochain rendez-vous</p>
+              <p className="font-condensed text-2xl leading-tight font-[850] text-balance">{prochains[0].titre}</p>
+              <p className="text-sm">{[prochains[0].heure, prochains[0].lieu].filter(Boolean).join(', ')}</p>
+            </div>
+          </div>
+        </Link>
+      )}
+
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 pt-8 sm:px-6 lg:grid-cols-[minmax(0,640px)_1fr] lg:gap-14 lg:pt-12">
         <section aria-labelledby="titre-fil">
           <div className="px-4 sm:px-0">
@@ -102,7 +122,7 @@ export function Accueil() {
             </div>
           </LayoutGroup>
 
-          <div className="mt-6 flex flex-col gap-3 sm:gap-5">
+          <div className="mt-6 flex flex-col gap-0 sm:gap-6">
             {visibles.map((p) => (
               <CartePublication key={p.id} pub={p} />
             ))}
@@ -136,9 +156,9 @@ export function Accueil() {
               <ol className="mt-4 divide-y divide-[var(--rule)] border-y border-rule empty:hidden">
                 {prochains.map((e) => (
                   <li key={e.id} className="flex gap-4 py-4">
-                    <div className="w-12 shrink-0 text-center">
-                      <div className="font-condensed text-4xl leading-none font-[850] text-rouge-texte">{numeroJour(e.date)}</div>
-                      <div className="text-sm text-muted">{formatMoisCourt(e.date)}</div>
+                    <div className="flex size-14 shrink-0 flex-col items-center justify-center bg-jaune text-encre">
+                      <div className="font-condensed text-3xl leading-none font-[900]">{numeroJour(e.date)}</div>
+                      <div className="text-xs font-bold">{formatMoisCourt(e.date)}</div>
                     </div>
                     <div>
                       <p className="font-semibold leading-snug">{e.titre}</p>
@@ -151,12 +171,12 @@ export function Accueil() {
               </ol>
             </section>
 
-            <section className="rounded-2xl bg-encre p-6 text-white dark:bg-surface">
+            <section className="bg-rouge p-6 text-white">
               <h2 className="font-condensed text-4xl leading-none font-[850]">{reglages.accueilEncartTitre}</h2>
-              <p className="mt-3 text-white/80">{reglages.accueilEncartTexte}</p>
+              <p className="mt-3 text-white/90">{reglages.accueilEncartTexte}</p>
               <Link
                 to="/adherer"
-                className="mt-5 inline-flex h-11 items-center rounded-full bg-rouge px-5 font-semibold transition-colors hover:bg-rouge-fonce"
+                className="mt-5 inline-flex h-11 items-center rounded-full bg-white px-5 font-semibold text-rouge transition-transform hover:scale-[1.03] active:scale-[0.98]"
               >
                 Adhérer
               </Link>

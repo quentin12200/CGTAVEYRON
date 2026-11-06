@@ -52,15 +52,15 @@ export function Banderole({ pub }: { pub: Publication }) {
         }`}
       >
         <div>
-        <p className="font-semibold text-white/85">À la une</p>
+        <p className="inline-block bg-jaune px-2.5 py-1 text-sm font-bold text-encre">À la une</p>
 
         <h1
-          className={`mt-4 max-w-5xl font-condensed text-[clamp(2.4rem,10.5vw,8.5rem)] leading-[0.86] font-[900] hyphens-auto sm:hyphens-none ${
-            photo ? 'lg:text-[clamp(3.5rem,6.2vw,6.5rem)]' : ''
+          className={`mt-5 max-w-5xl font-condensed text-[clamp(2.3rem,10vw,8rem)] leading-[0.8] font-[900] uppercase hyphens-auto sm:hyphens-none ${
+            photo ? 'lg:text-[clamp(3.25rem,5.6vw,6rem)]' : ''
           }`}
         >
           {mots.map((m, i) => (
-            <span key={i} className="mr-[0.2em] inline-block overflow-hidden pb-[0.06em] align-bottom last:mr-0">
+            <span key={i} className="mr-[0.2em] inline-block overflow-hidden pt-[0.12em] pb-[0.04em] align-bottom last:mr-0">
               <motion.span
                 className="inline-block"
                 initial={reduit ? false : { y: '105%' }}

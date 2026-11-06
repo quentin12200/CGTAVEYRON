@@ -27,7 +27,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
   const avecVisuel = !!pub.visuels?.length
 
   return (
-    <article className="overflow-hidden bg-surface sm:rounded-2xl">
+    <article className="overflow-hidden border-t-4 border-[var(--text)] bg-surface">
       <div className="flex items-baseline justify-between gap-4 px-5 pt-5">
         <PastilleTheme theme={pub.theme} />
         <time dateTime={pub.date} className="text-sm text-muted">{dateRelative(pub.date)}</time>
@@ -36,7 +36,7 @@ export function CartePublication({ pub }: { pub: Publication }) {
       {avecVisuel ? (
         <>
           <div className="px-5 pt-3 pb-4">
-            <h2 className="font-condensed text-[1.9rem] leading-[1.02] font-[800] text-balance">
+            <h2 className="font-condensed text-[1.9rem] leading-[1.02] font-[850] text-balance sm:text-[2.1rem]">
               <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
             </h2>
             {pub.unionLocale && <p className="mt-1 text-muted">{pub.unionLocale}</p>}
@@ -46,10 +46,10 @@ export function CartePublication({ pub }: { pub: Publication }) {
         </>
       ) : (
         <div className="px-5 pt-4 pb-2">
-          <h2 className="border-l-4 border-rouge pl-4 font-condensed text-[2rem] leading-[0.98] sm:text-[2.4rem] font-[850] text-balance">
+          <h2 className="font-condensed text-[2.1rem] leading-[0.98] font-[900] text-balance sm:text-[2.6rem]">
             <LienPublication pub={pub} className="hover:text-rouge-texte">{pub.titre}</LienPublication>
           </h2>
-          {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch] text-muted">{pub.texte}</p>}
+          {pub.texte && <p className="mt-4 line-clamp-4 max-w-[62ch]">{pub.texte}</p>}
         </div>
       )}
 
