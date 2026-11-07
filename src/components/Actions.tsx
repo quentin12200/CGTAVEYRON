@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { EASE_SORTIE } from '../lib/mouvement'
+import { aSoutenu, changerSoutien, useTotalSoutiens } from '../data/soutiens'
 
 const cle = (id: string) => `reaction:${id}`
 
@@ -12,23 +13,64 @@ function lire(id: string) {
   }
 }
 
+function memoriser(id: string, fait: boolean) {
+  try {
+    if (fait) localStorage.setItem(cle(id), '1')
+    else localStorage.removeItem(cle(id))
+  } catch {
+    /* stockage indisponible : sans conséquence, Firestore fait foi */
+  }
+}
+
 /**
- * Réaction anonyme ✊. Pour l'instant mémorisée dans le navigateur seulement ;
- * le compteur partagé arrive avec Firestore (étape 5).
+ * Bouton « ✊ Je soutiens » avec compteur partagé (src/data/soutiens.ts).
+ * Le clic répond tout de suite ; si l'enregistrement échoue, le bouton revient en arrière.
  */
 export function Reaction({ id }: { id: string }) {
   const [fait, setFait] = useState(() => lire(id))
   const [rafale, setRafale] = useState(0)
+  const [enCours, setEnCours] = useState(false)
+  const totalServeur = useTotalSoutiens(id)
+  // Écart entre le clic et la réponse du serveur, pour afficher le bon nombre tout de suite.
+  const [ecart, setEcart] = useState(0)
+  const total = Math.max(0, totalServeur + ecart)
 
-  const basculer = () => {
+  // Rattrape l'état réel si le stockage local est vide ou faux (autre onglet, autre appareil).
+  useEffect(() => {
+    let actif = true
+    void aSoutenu(id).then((reel) => {
+      if (actif && reel !== null) {
+        setFait(reel)
+        memoriser(id, reel)
+      }
+    })
+    return () => {
+      actif = false
+    }
+  }, [id])
+
+  // Quand le serveur a pris en compte le clic, on retire l'écart provisoire.
+  useEffect(() => {
+    setEcart(0)
+  }, [totalServeur])
+
+  const basculer = async () => {
+    if (enCours) return
     const suivant = !fait
     setFait(suivant)
+    setEcart((e) => e + (suivant ? 1 : -1))
     if (suivant) setRafale((n) => n + 1)
+    memoriser(id, suivant)
+    setEnCours(true)
     try {
-      if (suivant) localStorage.setItem(cle(id), '1')
-      else localStorage.removeItem(cle(id))
-    } catch {
-      /* stockage indisponible : la réaction reste visuelle */
+      await changerSoutien(id, suivant)
+    } catch (err) {
+      console.warn('Soutien non enregistré :', err)
+      setFait(!suivant)
+      setEcart(0)
+      memoriser(id, !suivant)
+    } finally {
+      setEnCours(false)
     }
   }
 
@@ -37,6 +79,7 @@ export function Reaction({ id }: { id: string }) {
       type="button"
       onClick={basculer}
       aria-pressed={fait}
+      aria-label={`${fait ? 'Solidaire' : 'Je soutiens'}${total ? ` : ${total} soutien${total > 1 ? 's' : ''}` : ''}`}
       className={`relative flex h-10 shrink-0 items-center whitespace-nowrap gap-2 rounded-full px-3 font-semibold appui ${
         fait ? 'bg-rouge text-white' : 'bg-[var(--rule)]/60 hover:bg-[var(--rule)]'
       }`}
@@ -52,7 +95,21 @@ export function Reaction({ id }: { id: string }) {
       >
         ✊
       </motion.span>
-      {fait ? 'Solidaire' : 'Je soutiens'}
+      <span aria-hidden="true">{fait ? 'Solidaire' : 'Je soutiens'}</span>
+      {total > 0 && (
+        <span aria-hidden="true" className={`tabular-nums ${fait ? 'text-white/85' : 'text-muted'}`}>
+          {/* Le nombre change par un fondu court, légèrement flouté : un seul changement à l'œil. */}
+          <motion.span
+            key={total}
+            className="inline-block"
+            initial={{ opacity: 0, filter: 'blur(2px)' }}
+            animate={{ opacity: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.15, ease: EASE_SORTIE }}
+          >
+            {total}
+          </motion.span>
+        </span>
+      )}
       <AnimatePresence>
         {fait && rafale > 0 && (
           <motion.span

@@ -41,6 +41,37 @@ service cloud.firestore {
       allow write: if estAdmin();
     }
 
+    // Bouton « ✊ Je soutiens » : un compteur par publication, un soutien par identité (anonyme ou non).
+    // Le compteur ne bouge que de +1 ou -1, et seulement en même temps que le soutien de la personne.
+    match /soutiens/{pub} {
+      function moi() {
+        return /databases/$(database)/documents/soutiens/$(pub)/par/$(request.auth.uid);
+      }
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['total'])
+        && request.resource.data.total == 1
+        && !exists(moi()) && existsAfter(moi());
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['total'])
+        && (
+          (request.resource.data.total == resource.data.total + 1 && !exists(moi()) && existsAfter(moi()))
+          || (request.resource.data.total == resource.data.total - 1 && exists(moi()) && !existsAfter(moi()))
+        );
+
+      match /par/{uid} {
+        function compteur() {
+          return /databases/$(database)/documents/soutiens/$(pub);
+        }
+        allow get: if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.keys().size() == 0
+          && getAfter(compteur()).data.total == (exists(compteur()) ? get(compteur()).data.total + 1 : 1);
+        allow delete: if request.auth != null && request.auth.uid == uid
+          && getAfter(compteur()).data.total == get(compteur()).data.total - 1;
+      }
+    }
+
     // Tout le reste est fermé.
     match /{document=**} {
       allow read, write: if false;
