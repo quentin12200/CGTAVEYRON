@@ -1,0 +1,21 @@
+{
+  "name": "CGT Aveyron — Union départementale",
+  "short_name": "CGT Aveyron",
+  "description": "L'actualité de l'Union départementale CGT de l'Aveyron : mobilisations, agenda, unions locales.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ECEBE8",
+  "theme_color": "#D20012",
+  "icons": [
+    { "src": "/icones/icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icones/icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icones/icone-masquable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Agenda", "url": "/agenda" },
+    { "name": "Adhérer", "url": "/adherer" },
+    { "name": "Contact", "url": "/contact" }
+  ]
+}

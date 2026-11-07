@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { usePublications } from '../data/publications'
+import { usePublications, usePublicationsPretes } from '../data/publications'
 import { PhotosEnPile } from '../components/Galerie'
 import { TexteAvecLiens } from '../components/TexteAvecLiens'
 import { VideoYoutube } from '../components/VideoYoutube'
@@ -14,12 +14,21 @@ import { Introuvable } from './Introuvable'
 export function PublicationPage() {
   const { id } = useParams()
   const publications = usePublications()
+  const pretes = usePublicationsPretes()
   const pub = publications.find((p) => p.id === id)
 
   useEffect(() => {
     if (pub) document.title = `${pub.titre} — ${SITE.nom}`
   }, [pub])
 
+  // Une publication écrite dans /admin n'existe que dans Firestore : on attend sa réponse avant de
+  // conclure qu'elle est introuvable (sinon un lien partagé sur Facebook affiche « introuvable »).
+  if (!pub && !pretes)
+    return (
+      <main id="contenu" className="mx-auto max-w-3xl px-4 pt-16 text-center text-muted" aria-busy="true">
+        Chargement de la publication…
+      </main>
+    )
   if (!pub) return <Introuvable />
 
   return (

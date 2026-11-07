@@ -762,6 +762,19 @@ function GestionSite({ s }: { s: Services }) {
   return (
     <form onSubmit={valider} className="mt-8 flex flex-col gap-10">
       {info && <p className="font-semibold" role="status">{info}</p>}
+      {(() => {
+        // Mentions obligatoires (loi pour la confiance dans l'économie numérique) : rien ne s'affiche au public tant qu'elles manquent.
+        const manquent = [
+          !actuels.mentionsAdresse && 'l’adresse du siège',
+          !actuels.mentionsTelephone && 'le téléphone',
+          !actuels.mentionsDirecteur && 'le directeur ou la directrice de la publication',
+        ].filter(Boolean)
+        return manquent.length ? (
+          <p className="border-l-4 border-rouge bg-jaune/40 p-4 font-semibold" role="note">
+            Mentions légales obligatoires à remplir (rubrique « Mentions légales » plus bas) : {manquent.join(', ')}.
+          </p>
+        ) : null
+      })()}
       <p className="text-muted">Videz un champ pour retrouver le texte d’origine.</p>
       {RUBRIQUES.map((r) => (
         <fieldset key={r.titre} className="flex flex-col gap-5">

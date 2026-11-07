@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEvenements } from '../data/evenements'
 import type { Evenement } from '../data/types'
 import { Page } from '../components/Page'
+import { calendrier } from '../lib/ics'
 import { useReglages } from '../data/reglages'
 import { formatJourSemaine, formatMois, numeroJour } from '../lib/format'
 import { EASE_SORTIE } from '../lib/mouvement'
@@ -17,6 +18,16 @@ function parMois(liste: Evenement[]) {
     groupes.set(cle, [...(groupes.get(cle) ?? []), e])
   }
   return [...groupes]
+}
+
+/** Télécharge le rendez-vous au format calendrier : le téléphone propose de l'ajouter à son agenda. */
+function ajouterAuCalendrier(e: Evenement) {
+  const url = URL.createObjectURL(new Blob([calendrier([e], e.titre)], { type: 'text/calendar;charset=utf-8' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${e.id}.ics`
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 function LigneEvenement({ e, passe }: { e: Evenement; passe: boolean }) {
@@ -43,6 +54,19 @@ function LigneEvenement({ e, passe }: { e: Evenement; passe: boolean }) {
           >
             {passe ? 'Voir les photos sur Facebook' : 'Voir l’annonce sur Facebook'}
           </a>
+        )}
+        {!passe && (
+          <button
+            type="button"
+            onClick={() => ajouterAuCalendrier(e)}
+            className="appui mt-3 flex h-10 items-center gap-2 rounded-full border-2 border-[var(--text)] px-4 font-semibold"
+          >
+            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5" />
+            </svg>
+            Ajouter à mon agenda
+          </button>
         )}
       </div>
       <span className="col-start-2 justify-self-start rounded-full border border-rule px-3 py-1 text-sm font-semibold sm:col-start-auto">
@@ -80,7 +104,13 @@ export function Agenda() {
   return (
     <Page titre="Agenda" intro={SITE.agendaIntro}>
       <section aria-labelledby="titre-a-venir">
-        <h2 id="titre-a-venir" className="font-condensed text-4xl font-[850]">À venir</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h2 id="titre-a-venir" className="font-condensed text-4xl font-[850]">À venir</h2>
+          {/* webcal:// : le téléphone propose de s'abonner ; les nouveaux rendez-vous arrivent tout seuls. */}
+          <a href="webcal://cgtaveyron.web.app/agenda.ics" className="font-semibold text-rouge-texte underline-offset-4 hover:underline">
+            S’abonner à l’agenda
+          </a>
+        </div>
         {aVenir.length > 0 ? (
           <div className="mt-6">
             <ListeParMois liste={aVenir} passe={false} />

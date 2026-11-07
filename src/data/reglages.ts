@@ -29,10 +29,34 @@ export const REGLAGES_DEFAUT = {
   contactIntro: 'L’Union départementale et les unions locales vous accueillent, syndiqué ou non.',
   agendaIntro: 'Manifestations, rassemblements, congrès et permanences de la CGT dans le département.',
 
-  mentionsEditeur: `${SITE.nomLong}. Adresse et directeur ou directrice de la publication à compléter.`,
-  mentionsHebergement: 'Firebase Hosting, Google LLC.',
-  mentionsDonnees:
-    'Ce site ne dépose pas de cookie publicitaire ni de traceur. Les messages envoyés par le formulaire de contact servent uniquement à vous répondre. Pour exercer vos droits d’accès ou de suppression, écrivez à l’UD.',
+  mentionsEditeur: `${SITE.nomLong} (union de syndicats).`,
+  mentionsAdresse: '',
+  mentionsTelephone: '',
+  mentionsDirecteur: '',
+  mentionsHebergement:
+    'Firebase Hosting, service de Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, États-Unis (+1 650 253 0000). Les contenus du site (publications, photos, agenda) sont stockés sur Google Cloud (Cloud Firestore et Cloud Storage).',
+  mentionsDonnees: `Responsable du traitement : ${SITE.nomLong}.
+
+Ce que le site enregistre :
+• Bouton « Je soutiens » : un identifiant anonyme attribué à votre appareil par Firebase et les publications que vous soutenez. Ni nom, ni adresse e-mail. Il sert à compter un soutien par personne.
+• Formulaire de contact : il ouvre votre propre messagerie ; le site ne garde rien. L'UD reçoit votre message par e-mail et s'en sert uniquement pour vous répondre.
+• Administration : l'adresse Google des personnes chargées de publier, pour vérifier leurs droits.
+
+Le site ne mesure pas l'audience et ne dépose aucun cookie publicitaire.
+
+Base légale : l'intérêt légitime de l'UD à informer le public et à lui répondre ; pour le contact, votre propre démarche.
+
+Données sensibles : un message adressé à un syndicat peut révéler une appartenance ou une sympathie syndicale. L'UD traite ces messages de façon confidentielle et ne les transmet à personne.
+
+Hébergement des données : Google (Firebase), sous-traitant de l'UD. Google LLC adhère au cadre de protection des données UE–États-Unis (Data Privacy Framework).
+
+Durée de conservation : les soutiens restent tant que la publication est en ligne ; les e-mails, le temps nécessaire au suivi de votre demande.`,
+  mentionsCookies:
+    "Le site ne dépose aucun cookie de mesure d'audience ni de publicité. Il utilise le stockage de votre navigateur uniquement pour ce que vous déclenchez vous-même : mémoriser vos soutiens et, après votre premier soutien, l'identifiant anonyme Firebase. Ces usages techniques ne demandent pas de consentement.\n\nLes vidéos YouTube ne se chargent que si vous les lancez, en mode « sans cookie » ; avant, seule leur image d'aperçu est affichée. La carte de la page Contact et les liens « Voir sur la carte » viennent d'OpenStreetMap.",
+  mentionsDroits:
+    "Vous pouvez accéder à vos données, les faire rectifier ou effacer, vous opposer à leur traitement ou en demander la limitation, en écrivant à {email}. Pour effacer vos soutiens, effacez les données de ce site dans votre navigateur, ou écrivez-nous.\n\nSi vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL : https://www.cnil.fr",
+  mentionsPropriete:
+    "Les textes, photos et visuels de ce site appartiennent à l'UD CGT de l'Aveyron ou à leurs auteurs ; toute reprise doit citer la source. Le nom et le logo CGT sont des marques de la Confédération générale du travail.\n\nDroit à l'image : une personne qui figure sur une photo et souhaite son retrait peut le demander à {email}. La photo sera retirée rapidement.",
 }
 
 export type Reglages = typeof REGLAGES_DEFAUT
@@ -84,9 +108,15 @@ export const RUBRIQUES: { titre: string; champs: { cle: CleReglage; label: strin
   {
     titre: 'Mentions légales',
     champs: [
-      { cle: 'mentionsEditeur', label: 'Éditeur (adresse, responsable de la publication)', type: 'long' },
+      { cle: 'mentionsEditeur', label: 'Éditeur (nom et forme juridique)', type: 'long' },
+      { cle: 'mentionsAdresse', label: 'Adresse du siège (obligatoire par la loi)', type: 'long' },
+      { cle: 'mentionsTelephone', label: 'Téléphone de l’UD (obligatoire par la loi)' },
+      { cle: 'mentionsDirecteur', label: 'Directeur ou directrice de la publication (obligatoire par la loi)' },
       { cle: 'mentionsHebergement', label: 'Hébergement', type: 'long' },
       { cle: 'mentionsDonnees', label: 'Données personnelles', type: 'long' },
+      { cle: 'mentionsCookies', label: 'Cookies et stockage', type: 'long' },
+      { cle: 'mentionsDroits', label: 'Vos droits ({email} = e-mail public)', type: 'long' },
+      { cle: 'mentionsPropriete', label: 'Propriété intellectuelle et droit à l’image ({email} = e-mail public)', type: 'long' },
     ],
   },
 ]
