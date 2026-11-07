@@ -35,6 +35,7 @@ export function Footer() {
               <li><a className={lien} href={SITE.facebookUrl} target="_blank" rel="noopener noreferrer">Facebook</a></li>
             )}
             <li><Link className={lien} to="/mentions-legales">Mentions légales</Link></li>
+            <li><a className={lien} href="/rss.xml" type="application/rss+xml">Flux RSS</a></li>
           </ul>
         </nav>
       </div>
