@@ -5,7 +5,7 @@ import { EASE_SORTIE } from '../lib/mouvement'
 import { DEMO } from '../data/demo'
 import { useEvenements } from '../data/evenements'
 import { useReglages } from '../data/reglages'
-import { usePublications } from '../data/publications'
+import { usePublications, usePublicationsPretes } from '../data/publications'
 import { THEMES, type Theme } from '../data/types'
 import { Banderole } from '../components/Banderole'
 import { CartePublication } from '../components/CartePublication'
@@ -45,7 +45,9 @@ export function Accueil() {
   const publications = usePublications()
   const evenements = useEvenements()
   const reglages = useReglages()
-  const epinglee = publications.find((p) => p.epingle)
+  const pretes = usePublicationsPretes()
+  // À la une : la publication épinglée depuis /admin ; à défaut, la plus récente (le bandeau n'est jamais vide).
+  const epinglee = publications.find((p) => p.epingle) ?? publications[0]
   const fil = useMemo(
     () =>
       publications
@@ -74,7 +76,12 @@ export function Accueil() {
 
   return (
     <main id="contenu">
-      {epinglee && <Banderole pub={epinglee} />}
+      {/* La banderole attend Firestore : sinon elle se déploierait sur une publication qui n'est plus à la une. */}
+      {pretes && epinglee ? (
+        <Banderole pub={epinglee} />
+      ) : (
+        <section aria-hidden="true" className="min-h-[22rem] bg-rouge sm:min-h-[26rem]" />
+      )}
 
       {prochains[0] && (
         <Link

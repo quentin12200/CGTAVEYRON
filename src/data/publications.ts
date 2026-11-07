@@ -10,3 +10,5 @@ const liste = listeEnDirect<Publication>('publications', publicationsFacebook, (
 export const usePublications = liste.useVisibles
 /** Toutes les publications, y compris celles retirées du site (pour l'administration). */
 export const useToutesPublications = liste.useTous
+/** Vrai quand les publications de Firestore sont arrivées (ou qu'on a cessé de les attendre). */
+export const usePublicationsPretes = liste.usePret
