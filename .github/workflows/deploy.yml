@@ -4,6 +4,10 @@ on:
   push:
     branches: [principal]
   workflow_dispatch:
+  # Toutes les heures : refait le flux RSS avec les publications écrites dans /admin.
+  # Le site n'est republié que si le flux a changé.
+  schedule:
+    - cron: '17 * * * *'
 
 jobs:
   deploy:
@@ -16,7 +20,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Le flux RSS a-t-il changé ?
+        id: flux
+        if: github.event_name == 'schedule'
+        run: |
+          if curl -fsSL https://cgtaveyron.web.app/rss.xml -o en-ligne.xml && cmp -s en-ligne.xml dist/rss.xml; then
+            echo "change=non" >> "$GITHUB_OUTPUT"
+            echo "Flux RSS identique : pas de nouvelle mise en ligne."
+          else
+            echo "change=oui" >> "$GITHUB_OUTPUT"
+          fi
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: github.event_name != 'schedule' || steps.flux.outputs.change == 'oui'
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CGTAVEYRON }}

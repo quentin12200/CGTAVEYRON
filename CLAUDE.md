@@ -9,12 +9,12 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - React 19 + Vite + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite`), animations avec `motion` (`motion/react`), routes avec `react-router-dom`.
 - Hébergement : Firebase Hosting, projet `cgtaveyron` (`.firebaserc`), adresse du site https://cgtaveyron.web.app. Firestore, Storage, Authentication et Functions arrivent aux étapes suivantes.
 - Code sur GitHub (`quentin12200/CGTAVEYRON`), branche de production **`principal`**.
-- Déploiement : `.github/workflows/deploy.yml` (push sur `principal` → production) et `preview.yml` (pull request → version de test 7 jours). Secret requis : `FIREBASE_SERVICE_ACCOUNT_CGTAVEYRON`.
+- Déploiement : `.github/workflows/deploy.yml` (push sur `principal` → production ; et toutes les heures si le flux RSS a changé) et `preview.yml` (pull request → version de test 7 jours). Secret requis : `FIREBASE_SERVICE_ACCOUNT_CGTAVEYRON`.
 
 ## Commandes
 
 - `npm run dev` — serveur local
-- `npm run build` — vérification TypeScript + build dans `dist/`
+- `npm run build` — vérification TypeScript + build dans `dist/` + flux RSS (`scripts/rss.mjs`)
 - Mise en ligne sans rien installer : GitHub → onglet Actions → « Mise en ligne » → Run workflow (ou fusionner une pull request dans `principal`).
 
 ## Organisation
@@ -34,6 +34,7 @@ Cahier des charges complet (objectifs, feuille de route, prompts par étape) : d
 - `public/logo-cgt-aveyron.png` — logo officiel de l’UD (rogné depuis `AVEYRON (4).png`), aussi utilisé en favicon.
 - `src/components/` — Header (réduit au scroll, tiroir mobile), Banderole (publication épinglée + compte à rebours), CartePublication, Galerie (photos **jamais recadrées** : cadre à la forme des photos entre 16:9 et 4:5, fond flou autour ; `PhotosEnPile` sur la page de publication ; plein écran), Actions (réaction ✊, partage), Visuel (photo ou visuel « tract » de secours).
 - `src/lib/liens.ts` + `components/TexteAvecLiens.tsx` + `components/VideoYoutube.tsx` — les adresses écrites dans le texte d'une publication deviennent des liens ; un lien YouTube (watch, youtu.be, shorts, live) affiche la vignette de la vidéo (dans le fil si la publication n'a pas de photo, toujours sur sa page). Seule l'image `i.ytimg.com` est chargée ; la vidéo se lance au toucher via `youtube-nocookie.com` (pas de traceur avant le geste du visiteur).
+- `scripts/rss.mjs` — flux RSS `dist/rss.xml` (50 dernières publications : `facebook.ts` + Firestore `publications` lu par l'API REST publique, mêmes règles que le site : remplacement par `id`, `masque` exclu). Lancé par `npm run build`. Image : première photo, sinon vignette YouTube. Date du flux = publication la plus récente, pour que le fichier ne change que si le fil change. `deploy.yml` le refait toutes les heures (cron) et ne republie que si le flux diffère de celui en ligne. Balise `<link rel="alternate">` dans `index.html`, lien « Flux RSS » dans le pied de page.
 - `src/pages/` — Accueil, PublicationPage, Agenda (« À venir » + « Ils ont eu lieu », lien Facebook par rendez-vous), Adherer, Contact, MentionsLegales, Introuvable.
 
 ## Design
