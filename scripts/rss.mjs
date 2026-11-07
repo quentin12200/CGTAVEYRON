@@ -4,82 +4,28 @@
 // remplace la publication importée de même identifiant ; « masque » la retire, comme sur le site.
 // Sans réseau, le flux est fait avec les seules publications importées (avertissement affiché).
 import { writeFileSync } from 'node:fs'
-import { publicationsFacebook } from '../src/data/facebook.ts'
 import { videosYoutube } from '../src/lib/liens.ts'
+import { SITE, chargerPublications, echapperHtml as echapper, imagePublication } from './donnees.mjs'
 
-const SITE = 'https://cgtaveyron.web.app'
-const PROJET = 'cgtaveyron'
 const MAX = 50
-
-/** Convertit une valeur de l'API REST Firestore en valeur JavaScript. */
-function valeur(v) {
-  if (!v) return undefined
-  if ('stringValue' in v) return v.stringValue
-  if ('booleanValue' in v) return v.booleanValue
-  if ('integerValue' in v) return Number(v.integerValue)
-  if ('doubleValue' in v) return v.doubleValue
-  if ('nullValue' in v) return null
-  if ('arrayValue' in v) return (v.arrayValue.values ?? []).map(valeur)
-  if ('mapValue' in v) return Object.fromEntries(Object.entries(v.mapValue.fields ?? {}).map(([k, x]) => [k, valeur(x)]))
-  return undefined
-}
-
-async function publicationsFirestore() {
-  const hote = process.env.FIRESTORE_EMULATOR_HOST
-  const base = hote
-    ? `http://${hote}/v1/projects/${process.env.RSS_PROJET ?? PROJET}/databases/(default)/documents/publications`
-    : `https://firestore.googleapis.com/v1/projects/${PROJET}/databases/(default)/documents/publications`
-  const docs = []
-  let jeton = ''
-  do {
-    const r = await fetch(`${base}?pageSize=300${jeton ? `&pageToken=${jeton}` : ''}`)
-    if (!r.ok) throw new Error(`Firestore a répondu ${r.status}`)
-    const json = await r.json()
-    for (const d of json.documents ?? []) {
-      const id = d.name.split('/').pop()
-      docs.push({ ...valeur({ mapValue: { fields: d.fields } }), id })
-    }
-    jeton = json.nextPageToken ?? ''
-  } while (jeton)
-  return docs
-}
-
-const echapper = (s) =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 /** « 2026-11-05T18:21 » (heure de Paris) → date RFC 822 avec le bon décalage (hiver/été). */
 function dateRfc822(locale) {
   const [j, h = '12:00'] = locale.split('T')
   const [a, m, d] = j.split('-').map(Number)
   const [hh, mm] = h.split(':').map(Number)
-  // Décalage de Paris à cette date : on compare l'heure affichée à Paris pour l'instant UTC supposé.
   const supposeUtc = Date.UTC(a, m - 1, d, hh, mm)
-  const parisVu = new Date(new Date(supposeUtc).toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
-  const decalage = parisVu.getTime() - new Date(new Date(supposeUtc).toLocaleString('en-US', { timeZone: 'UTC' })).getTime()
-  return new Date(supposeUtc - decalage).toUTCString().replace('GMT', '+0000')
+  const vu = (fuseau) => new Date(new Date(supposeUtc).toLocaleString('en-US', { timeZone: fuseau })).getTime()
+  return new Date(supposeUtc - (vu('Europe/Paris') - vu('UTC'))).toUTCString().replace('GMT', '+0000')
 }
 
-let enLigne = []
-try {
-  enLigne = await publicationsFirestore()
-} catch (e) {
-  console.warn(`⚠ Flux RSS sans les publications de Firestore (${e.message}).`)
-}
-const parId = new Map(publicationsFacebook.map((p) => [p.id, p]))
-for (const p of enLigne) parId.set(p.id, p)
-const publications = [...parId.values()]
-  .filter((p) => !p.masque && p.titre && p.date)
-  .sort((a, b) => b.date.localeCompare(a.date))
-  .slice(0, MAX)
+const { publications: toutes, enLigne } = await chargerPublications()
+const publications = toutes.slice(0, MAX)
+const enLigneLength = enLigne
 
 const items = publications.map((p) => {
   const lien = `${SITE}/publication/${encodeURIComponent(p.id)}`
-  const photo = (p.visuels ?? []).find((v) => v?.src)?.src
-  // Sans photo, la vignette de la première vidéo YouTube citée sert d'image.
-  const video = videosYoutube(p.texte, p.lienFacebook)[0]
-  const image = photo
-    ? photo.startsWith('http') ? photo : SITE + photo
-    : video ? `https://i.ytimg.com/vi/${video}/hqdefault.jpg` : null
+  const image = imagePublication(p, videosYoutube)
   const texte = p.texte ?? ''
   const html =
     (image ? `<p><img src="${echapper(image)}" alt="" /></p>` : '') +
@@ -119,4 +65,4 @@ ${items.join('\n')}
 </rss>
 `
 writeFileSync(new URL('../dist/rss.xml', import.meta.url), rss)
-console.log(`✓ dist/rss.xml : ${publications.length} publications (${enLigne.length} lues dans Firestore).`)
+console.log(`✓ dist/rss.xml : ${publications.length} publications (${enLigneLength} lues dans Firestore).`)
