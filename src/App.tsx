@@ -33,23 +33,47 @@ function ProtegerLeFond() {
         document.getElementById("fond"),
         document.querySelector("header"),
         document.querySelector("main"),
-        ...document.querySelectorAll<HTMLElement>("main > div"),
-        ...document.querySelectorAll<HTMLElement>("aside"),
+        ...document.querySelectorAll<HTMLElement>(
+          "main > div, main > section, main > form, aside",
+        ),
       ];
       for (const el of blocs) {
-        el?.style.setProperty("background-color", "var(--bg)", "important");
+        if (!el) continue;
+        const classes = typeof el.className === "string" ? el.className : "";
+        // Un bloc qui a sa propre couleur (bannière rouge, bandeau jaune…) garde la sienne ;
+        // une feuille blanche reste blanche ; le reste prend la couleur du fond de page.
+        if (/(^|\s)bg-(?!surface|\[var\(--bg\)\])/.test(classes)) continue;
+        const fond = /(^|\s)bg-surface(\s|$)/.test(classes)
+          ? "var(--surface)"
+          : "var(--bg)";
+        el.style.setProperty("background-color", fond, "important");
         // Une extension peut imposer sa couleur de fond avec une priorité « utilisateur », qui passe avant
         // tout style du site. Elle ne touche en général que la couleur : on peint donc le fond avec une
         // image unie de la même couleur, qui se dessine par-dessus.
-        el?.style.setProperty("background-image", "linear-gradient(var(--bg), var(--bg))", "important");
-        el?.style.setProperty("color", "var(--text)", "important");
+        el.style.setProperty(
+          "background-image",
+          `linear-gradient(${fond}, ${fond})`,
+          "important",
+        );
+        el.style.setProperty("color", "var(--text)", "important");
       }
     };
     poser();
-    // Si une extension ajoute ses styles après le chargement, on repose les couleurs.
-    const obs = new MutationObserver(poser);
+    // Les pages chargées en différé (administration) et les blocs qui apparaissent après coup
+    // doivent être protégés aussi : on repose les couleurs à chaque ajout dans la page (une fois par image).
+    let attente = 0;
+    const plusTard = () => {
+      if (!attente)
+        attente = requestAnimationFrame(() => ((attente = 0), poser()));
+    };
+    const obs = new MutationObserver(plusTard);
     obs.observe(document.head, { childList: true });
-    return () => obs.disconnect();
+    const fond = document.getElementById("fond");
+    if (fond) obs.observe(fond, { childList: true, subtree: true });
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(attente);
+    };
   }, [pathname]);
   return null;
 }
