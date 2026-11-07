@@ -117,7 +117,26 @@
 /* « Réduire les animations » : moins de mouvement, pas zéro transition. On garde les fondus de couleur,
    qui aident à comprendre ; on retire les déplacements et changements de taille. Les animations
    faites avec motion sont gérées par <MotionConfig reducedMotion="user">. */
+/* Banderole : un reflet passe lentement sur le tissu, en continu (mouvement décoratif, d'où la durée longue). */
+@keyframes vent {
+  from {
+    transform: translateX(-12%);
+  }
+  to {
+    transform: translateX(12%);
+  }
+}
+.vent {
+  animation: vent 7s var(--ease-deplacement) infinite alternate;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  /* Pas de boucle du tout (sinon la durée ramenée à 0,01 ms la ferait clignoter). */
+  .vent {
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {
