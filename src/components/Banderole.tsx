@@ -42,18 +42,21 @@ export function Banderole({ pub }: { pub: Publication }) {
   const photo = photos[0]
 
   return (
-    <section aria-label="À la une" className="relative isolate overflow-hidden bg-rouge text-white">
-      <motion.div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10"
-        initial={jouer ? { clipPath: 'inset(0 100% 0 0)' } : false}
-        animate={{ clipPath: 'inset(0 0% 0 0)' }}
-        transition={{ duration: 0.7, ease: EASE_DEPLACEMENT }}
-      >
+    // La banderole entière se déroule de gauche à droite, comme un tissu qu'on déploie (une fois par visite).
+    <motion.section
+      aria-label="À la une"
+      className="relative isolate overflow-hidden bg-rouge text-white"
+      initial={jouer ? { clipPath: 'inset(0 100% 0 0)' } : false}
+      animate={{ clipPath: 'inset(0 0% 0 0)' }}
+      transition={{ duration: 0.7, ease: EASE_DEPLACEMENT }}
+    >
+      {/* Le pli sombre et le reflet clair glissent lentement, en continu : du vent dans la banderole. */}
+      <div aria-hidden="true" className="vent absolute inset-y-0 -inset-x-[15%] -z-10">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="size-full">
           <path d="M-5 108 L105 -8" stroke="rgba(0,0,0,.12)" strokeWidth="22" />
+          <path d="M20 108 L130 -8" stroke="rgba(255,255,255,.07)" strokeWidth="10" />
         </svg>
-      </motion.div>
+      </div>
 
       <div
         className={`mx-auto max-w-6xl px-4 pt-10 pb-12 sm:px-6 sm:pt-14 sm:pb-16 ${
@@ -75,7 +78,7 @@ export function Banderole({ pub }: { pub: Publication }) {
                 initial={jouer ? { y: '105%' } : false}
                 animate={{ y: 0 }}
                 // 40 ms entre les mots, plafonné : un long titre ne fait pas attendre la suite.
-                transition={{ delay: 0.15 + Math.min(i, 8) * 0.04, duration: 0.5, ease: EASE_SORTIE }}
+                transition={{ delay: 0.45 + Math.min(i, 8) * 0.05, duration: 0.5, ease: EASE_SORTIE }}
               >
                 {m}
               </motion.span>
@@ -86,7 +89,7 @@ export function Banderole({ pub }: { pub: Publication }) {
         <motion.div
           initial={jouer ? { opacity: 0, y: 12 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4, ease: EASE_SORTIE }}
+          transition={{ delay: 0.75, duration: 0.4, ease: EASE_SORTIE }}
           className="mt-8 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between"
         >
           <div className="text-lg">
@@ -127,9 +130,10 @@ export function Banderole({ pub }: { pub: Publication }) {
         {photo && (
           // La photo de la publication, entière (jamais recadrée), comme un tirage épinglé sur la banderole.
           <motion.div
-            initial={jouer ? { opacity: 0, y: 16, rotate: 0 } : false}
+            // La photo tombe et se pose, légèrement penchée, comme un tirage qu'on épingle.
+            initial={jouer ? { opacity: 0, y: -24, rotate: 4 } : false}
             animate={{ opacity: 1, y: 0, rotate: -1.5 }}
-            transition={{ delay: 0.25, duration: 0.5, ease: EASE_SORTIE }}
+            transition={{ delay: 0.7, type: 'spring', duration: 0.6, bounce: 0.25 }}
             className="mt-10 lg:mt-0"
           >
             <Link
@@ -153,6 +157,6 @@ export function Banderole({ pub }: { pub: Publication }) {
           </motion.div>
         )}
       </div>
-    </section>
+    </motion.section>
   )
 }

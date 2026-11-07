@@ -80,7 +80,7 @@ export function Accueil() {
       {pretes && epinglee ? (
         <Banderole pub={epinglee} />
       ) : (
-        <section aria-hidden="true" className="min-h-[22rem] bg-rouge sm:min-h-[26rem]" />
+        <section aria-hidden="true" className="min-h-[22rem] sm:min-h-[26rem]" />
       )}
 
       {prochains[0] && (
