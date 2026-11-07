@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LayoutGroup, motion } from 'motion/react'
+import { LayoutGroup, motion, useAnimate, useReducedMotion } from 'motion/react'
+import { EASE_SORTIE } from '../lib/mouvement'
 import { DEMO } from '../data/demo'
 import { useEvenements } from '../data/evenements'
 import { useReglages } from '../data/reglages'
@@ -15,6 +16,25 @@ const PAQUET = 10
 
 export function Accueil() {
   const [filtre, setFiltre] = useState<Theme | null>(null)
+  // Changement de filtre : la liste réapparaît en 180 ms (fondu + léger glissement) pour montrer
+  // que le contenu a changé. Pas au premier affichage ; sans glissement si « réduire les animations ».
+  const [liste, animerListe] = useAnimate()
+  const reduit = useReducedMotion()
+  const premierFiltre = useRef(true)
+  // Activé au clavier (Entrée, Espace) : changement immédiat, sans animation (règle du site).
+  const parClavier = useRef(false)
+  useEffect(() => {
+    if (premierFiltre.current) {
+      premierFiltre.current = false
+      return
+    }
+    if (!liste.current || parClavier.current) return
+    void animerListe(
+      liste.current,
+      reduit ? { opacity: [0, 1] } : { opacity: [0, 1], transform: ['translateY(6px)', 'translateY(0px)'] },
+      { duration: 0.18, ease: EASE_SORTIE },
+    )
+  }, [filtre, reduit, animerListe, liste])
   const [nombre, setNombre] = useState(PAQUET)
   const sentinelle = useRef<HTMLDivElement>(null)
 
@@ -99,7 +119,9 @@ export function Accueil() {
                   <button
                     key={t ?? 'tout'}
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      // detail === 0 : clic déclenché au clavier, pas au toucher ni à la souris.
+                      parClavier.current = e.detail === 0
                       setFiltre(t)
                       setNombre(PAQUET)
                     }}
@@ -122,7 +144,7 @@ export function Accueil() {
             </div>
           </LayoutGroup>
 
-          <div className="mt-6 flex flex-col gap-0 sm:gap-6">
+          <div ref={liste} className="mt-6 flex flex-col gap-0 sm:gap-6">
             {visibles.map((p) => (
               <CartePublication key={p.id} pub={p} />
             ))}
