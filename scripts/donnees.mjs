@@ -2,7 +2,7 @@
 // listes de départ du dépôt + collections Firestore lues par l'API REST publique, avec les mêmes règles
 // que le site (un document Firestore remplace l'élément de même id ; « masque » le retire).
 import { publicationsFacebook } from '../src/data/facebook.ts'
-import { evenements as evenementsDepart } from '../src/data/demo.ts'
+import { evenements as evenementsDepart, unionsLocales as unionsDepart } from '../src/data/demo.ts'
 
 export const SITE = 'https://cgtaveyron.web.app'
 const PROJET = 'cgtaveyron'
@@ -58,6 +58,21 @@ export async function chargerPublications() {
 export async function chargerEvenements() {
   const { liste } = await fusion('evenements', evenementsDepart)
   return liste.filter((e) => e.titre && e.date).sort((a, b) => a.date.localeCompare(b.date))
+}
+
+/** Unions locales visibles (UD en premier, puis par nom). */
+export async function chargerUnions() {
+  const { liste } = await fusion('unionsLocales', unionsDepart)
+  return liste.filter((u) => u.nom).sort((a, b) => (a.id === 'ud' ? -1 : b.id === 'ud' ? 1 : a.nom.localeCompare(b.nom, 'fr')))
+}
+
+/** Textes modifiés depuis /admin (document « reglages/site ») ; {} si rien ou hors ligne. */
+export async function chargerReglages() {
+  try {
+    return (await collection('reglages')).find((d) => d.id === 'site') ?? {}
+  } catch {
+    return {}
+  }
 }
 
 export const echapperHtml = (s) =>

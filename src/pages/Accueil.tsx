@@ -39,7 +39,7 @@ export function Accueil() {
   const sentinelle = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    document.title = `${SITE.nom} — actualités`
+    document.title = `${SITE.nom} — actualités de l’Union départementale`
   }, [])
 
   const publications = usePublications()
