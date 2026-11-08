@@ -15,7 +15,7 @@ export function lireHeure(heure?: string): [number, number] | null {
 }
 
 /** Instant UTC d'une heure de Paris (gère l'heure d'été). */
-function parisVersUtc(a: number, mois: number, j: number, h: number, min: number): Date {
+export function parisVersUtc(a: number, mois: number, j: number, h: number, min: number): Date {
   const suppose = Date.UTC(a, mois - 1, j, h, min)
   const vu = (fuseau: string) => new Date(new Date(suppose).toLocaleString('en-US', { timeZone: fuseau })).getTime()
   return new Date(suppose - (vu('Europe/Paris') - vu('UTC')))
