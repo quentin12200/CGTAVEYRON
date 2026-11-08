@@ -199,6 +199,25 @@ function GestionPublications({ s }: { s: Services }) {
     await setDoc(doc(s.db, 'publications', p.id), p)
   }
 
+  // Copie le texte, puis ouvre la fenêtre de partage de Facebook sur le lien de la publication :
+  // on y choisit de publier au nom de la page de l'UD, on colle le texte, on valide.
+  const partagerSurFacebook = async (p: Publication) => {
+    const lien = `${window.location.origin}/publication/${encodeURIComponent(p.id)}`
+    let copie = false
+    try {
+      await navigator.clipboard.writeText([p.titre, p.texte].filter(Boolean).join('\n\n'))
+      copie = true
+    } catch {
+      /* presse-papiers refusé : le partage reste possible, sans texte prêt à coller */
+    }
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(lien)}`, 'facebook', 'width=680,height=720')
+    setInfo(
+      copie
+        ? `Texte de « ${p.titre} » copié : dans la fenêtre Facebook, choisissez la page de l'UD, collez le texte (Ctrl+V ou appui long), puis publiez.`
+        : `Dans la fenêtre Facebook, choisissez la page de l'UD et publiez. Le texte n'a pas pu être copié automatiquement.`,
+    )
+  }
+
   const basculer = async (p: Publication) => {
     setErreur('')
     try {
@@ -258,6 +277,11 @@ function GestionPublications({ s }: { s: Services }) {
                   <button type="button" onClick={() => basculer(p)} className="text-muted hover:underline">
                     {p.masque ? 'Remettre sur le site' : 'Retirer du site'}
                   </button>
+                  {!p.masque && (
+                    <button type="button" onClick={() => partagerSurFacebook(p)} className="text-[#0A5BD3] hover:underline">
+                      Partager sur Facebook
+                    </button>
+                  )}
                 </div>
               </div>
             </li>
@@ -355,7 +379,7 @@ function Editeur({
       await enregistrer(finale)
       // Une seule publication à la une à la fois.
       if (finale.epingle) for (const a of autres.filter((a) => a.epingle)) await enregistrer({ ...a, epingle: false })
-      fini(`« ${finale.titre} » est enregistrée et visible sur le site.`)
+      fini(`« ${finale.titre} » est enregistrée et visible sur le site. Pour la relayer, utilisez « Partager sur Facebook » dans la liste.`)
     } catch (err) {
       setErreur(messageErreur(err))
     } finally {
