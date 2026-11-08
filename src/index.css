@@ -71,6 +71,18 @@
     color-scheme: only light; /* « only » : le navigateur ne repeint pas la page en sombre */
   }
 
+  /* Filet de sécurité : si une extension efface tout de même le fond clair (voir ProtegerLeFond dans App.tsx),
+     le texte passe en clair sur sombre pour rester lisible. */
+  :root.clair.secours,
+  :root.secours {
+    --bg: #111111;
+    --surface: #1c1a1f;
+    --text: #f2eff4;
+    --muted: #b9b3bd;
+    --rule: #3a3340;
+    --color-rouge-texte: #ff5a5f;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }
