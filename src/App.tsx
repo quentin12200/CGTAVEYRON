@@ -25,7 +25,20 @@ const Admin = lazy(() =>
 function ProtegerLeFond() {
   const { pathname } = useLocation();
   useEffect(() => {
+    // Sonde : un bloc sans aucune couleur. Si une extension lui donne quand même un fond, c'est qu'elle
+    // noircit tous les éléments de la page : aucun fond clair ne peut tenir, on passe en clair sur sombre.
+    let sonde = document.getElementById("sonde-fond");
+    if (!sonde) {
+      sonde = document.createElement("div");
+      sonde.id = "sonde-fond";
+      sonde.setAttribute("aria-hidden", "true");
+      sonde.style.cssText = "position:absolute;width:0;height:0;overflow:hidden";
+      document.body.append(sonde);
+    }
     const poser = () => {
+      const fondImpose = getComputedStyle(sonde).backgroundColor;
+      const toutNoirci = !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(fondImpose);
+      document.documentElement.classList.toggle("secours", toutNoirci);
       const blocs = [
         document.documentElement,
         document.body,
@@ -55,8 +68,19 @@ function ProtegerLeFond() {
           `linear-gradient(${fond}, ${fond})`,
           "important",
         );
+        // Certaines extensions effacent aussi l'image de fond (règle « background » complète). Une ombre
+        // intérieure géante peint la même couleur par-dessus le fond, sous le texte : elles n'y touchent pas.
+        el.style.setProperty(
+          "box-shadow",
+          `inset 0 0 0 99999px ${fond}`,
+          "important",
+        );
         el.style.setProperty("color", "var(--text)", "important");
       }
+      // Dernier recours : si ni l'image ni l'ombre ne tiennent, le texte passe en clair sur sombre.
+      const vu = getComputedStyle(document.body);
+      if (vu.backgroundImage === "none" && !vu.boxShadow.includes("inset"))
+        document.documentElement.classList.add("secours");
     };
     poser();
     // Les pages chargées en différé (administration) et les blocs qui apparaissent après coup
